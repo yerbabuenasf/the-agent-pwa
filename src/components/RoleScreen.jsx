@@ -2,59 +2,62 @@
 
 export default function RoleScreen({ role, onSelect, onContinue }) {
   return (
-    <>
-      <div className="hero role-hero">
-        <div className="hero-badge">Welcome</div>
-        <h1>Who are you negotiating for?</h1>
-        <p>
-          The Agent works for both sides of the deal — freelancers who want
-          fair rates, and employers who want to budget right.
+    <div className="role-screen">
+
+      {/* Bold header */}
+      <div className="role-header">
+        <div className="role-header-eyebrow">AI Rate Intelligence</div>
+        <h1 className="role-header-title">Know Your<br />Worth.</h1>
+        <p className="role-header-sub">
+          Real market rates, negotiation scripts, and budget guidance — powered by AI.
         </p>
       </div>
 
-      <div className="form-body" style={{ padding: '24px 20px' }}>
-        <p style={{ fontSize: 13, fontWeight: 700, color: '#374151', textAlign: 'center', marginBottom: 16 }}>
-          I am a...
-        </p>
+      {/* Role selector */}
+      <div className="role-body">
+        <p className="role-prompt">I am a —</p>
 
-        <div className="role-cards">
-          <div
-            className={`role-card ${role === 'contractor' ? 'sel-contractor' : ''}`}
+        <div className="role-cards-v2">
+
+          <button
+            className={`role-card-v2 ${role === 'contractor' ? 'active-blue' : ''}`}
             onClick={() => onSelect('contractor')}
           >
-            <div className="role-icon blue">📸</div>
-            <div className="role-text">
-              <h3>Contractor</h3>
-              <p>Photographer or videographer — I want to know what to charge and how to negotiate confidently.</p>
+            <div className="rcv2-top">
+              <div className="rcv2-icon">📸</div>
+              {role === 'contractor' && <div className="rcv2-check blue-check">✓</div>}
             </div>
-            <div className={`role-check ${role === 'contractor' ? 'blue' : ''}`}>
-              {role === 'contractor' && '✓'}
-            </div>
-          </div>
+            <div className="rcv2-label">Contractor</div>
+            <div className="rcv2-desc">Photographer or videographer — find out what to charge and how to negotiate.</div>
+          </button>
 
-          <div
-            className={`role-card ${role === 'employer' ? 'sel-employer' : ''}`}
+          <button
+            className={`role-card-v2 ${role === 'employer' ? 'active-purple' : ''}`}
             onClick={() => onSelect('employer')}
           >
-            <div className="role-icon purple">🏢</div>
-            <div className="role-text">
-              <h3>Employer / Client</h3>
-              <p>Brand, agency, or business — I want to know what's fair to offer a creative professional.</p>
+            <div className="rcv2-top">
+              <div className="rcv2-icon">🏢</div>
+              {role === 'employer' && <div className="rcv2-check purple-check">✓</div>}
             </div>
-            <div className={`role-check ${role === 'employer' ? 'purple' : ''}`}>
-              {role === 'employer' && '✓'}
-            </div>
-          </div>
+            <div className="rcv2-label">Employer</div>
+            <div className="rcv2-desc">Brand or agency — get a fair market budget and an offer that lands.</div>
+          </button>
+
         </div>
 
         <button
-          className={`btn ${role === 'employer' ? 'purple' : 'blue'}`}
+          className={`role-cta ${!role ? 'role-cta-disabled' : role === 'employer' ? 'role-cta-purple' : 'role-cta-blue'}`}
           onClick={onContinue}
           disabled={!role}
         >
-          Continue as {role === 'employer' ? 'Employer' : role === 'contractor' ? 'Contractor' : '...'} →
+          {!role
+            ? 'Select a role to continue'
+            : `Get My ${role === 'contractor' ? 'Rate' : 'Budget'} →`}
         </button>
+
+        <p className="role-footer">Free to try &nbsp;·&nbsp; No account needed</p>
       </div>
-    </>
+
+    </div>
   );
 }
