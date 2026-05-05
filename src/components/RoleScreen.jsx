@@ -6,7 +6,7 @@ export default function RoleScreen({ role, onSelect, onContinue }) {
 
       {/* Bold header */}
       <div className="role-header">
-        <div className="role-header-eyebrow">AI Rate Intelligence</div>
+        <div className="role-header-eyebrow">Photo & Video Rate Negotiator</div>
         <h1 className="role-header-title">Know Your<br />Worth.</h1>
         <p className="role-header-sub">
           Real market rates, negotiation scripts, and budget guidance — powered by AI.
