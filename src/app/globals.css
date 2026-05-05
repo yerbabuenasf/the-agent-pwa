@@ -907,6 +907,78 @@ button { font-family: inherit; }
   display: block;
 }
 
+/* ── Result Action Buttons ──────────────────── */
+.action-wrap {
+  padding: 0 14px 28px;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.action-row-2 {
+  display: flex;
+  gap: 8px;
+}
+.action-row-2 .btn { padding: 14px; font-size: 14px; }
+
+/* ── Approval Bottom Sheet ───────────────────── */
+.sheet-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 300;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.sheet-drawer {
+  width: 100%; max-width: 430px;
+  margin: 0 auto;
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  margin: 12px auto 0;
+}
+
+.sheet-hero {
+  padding: 24px 20px 28px;
+  margin-top: 12px;
+}
+.sheet-rate {
+  font-size: 52px; font-weight: 800;
+  color: #fff; letter-spacing: -2px;
+  line-height: 1; margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet-body {
+  padding: 16px 14px 32px;
+}
+.sheet-approve-prompt {
+  font-size: 17px; font-weight: 700;
+  color: var(--ink); text-align: center;
+  margin-bottom: 14px; letter-spacing: -0.3px;
+}
+.sheet-cancel-btn {
+  width: 100%; padding: 13px;
+  background: none; border: none;
+  font-size: 14px; font-weight: 600;
+  color: var(--ink-3); cursor: pointer;
+  font-family: inherit; margin-top: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* ── Share Banner (on ResultScreen) ─────────── */
 .share-banner {
   display: flex; align-items: center; gap: 12px;
