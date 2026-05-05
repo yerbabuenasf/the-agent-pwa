@@ -20,6 +20,8 @@ Project details:
 - Timeline: ${data.timeline}
 - Experience level: ${data.experienceLevel}
 - Location: ${data.location || 'Not specified'}
+${data.videoServices?.length ? `- Video services provided: ${data.videoServices.join(', ')}` : ''}
+${data.providesCamera !== null && data.providesCamera !== undefined ? `- Provides own camera & equipment: ${data.providesCamera ? 'Yes — add camera package fee ($300–800/day)' : 'No — client provides equipment'}` : ''}
 
 IMPORTANT RATE GUIDANCE:
 - Photo-only projects: base day rates typically $800–$3,500 depending on experience and usage
@@ -39,6 +41,8 @@ Project details:
 - Timeline: ${data.timeline}
 - Talent level preferred: ${data.talentLevel}
 - Location: ${data.location || 'Not specified'}
+${data.videoServices?.length ? `- Video services needed from contractor: ${data.videoServices.join(', ')}` : ''}
+${data.equipmentProvided !== null && data.equipmentProvided !== undefined ? `- Client provides camera equipment: ${data.equipmentProvided ? 'Yes — no equipment fee needed' : 'No — contractor must bring camera package, add $300–800/day'}` : ''}
 ${data.ownBudget ? `- EMPLOYER'S SET BUDGET: $${Number(data.ownBudget).toLocaleString()}
 
 IMPORTANT — The employer has given you a specific budget to work with. Your job shifts:

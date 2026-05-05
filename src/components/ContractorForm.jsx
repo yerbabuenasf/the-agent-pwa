@@ -16,6 +16,14 @@ const USAGE_OPTIONS = ['1-Year Digital', '2-Year Digital Exclusive', 'Print + Di
 const TIMELINE_OPTS = ['Same day', '2–3 business days', '5 business days', '1–2 weeks', '1 month+'];
 const EXP_LEVELS    = ['Emerging (0–2 yrs)', 'Mid-Level (3–6 yrs)', 'Senior (7–12 yrs)', 'Top-Tier (12+ yrs)'];
 
+const VIDEO_SERVICES = [
+  { id: 'Direct',          label: 'Direct',          icon: '🎬', desc: 'Creative direction on set' },
+  { id: 'Shoot',           label: 'Shoot',           icon: '📹', desc: 'Camera operation' },
+  { id: 'Edit',            label: 'Edit',            icon: '✂️',  desc: 'Video editing & assembly' },
+  { id: 'Color Correct',   label: 'Color Correct',   icon: '🎨', desc: 'Color grading & correction' },
+  { id: 'Sound Design',    label: 'Sound Design',    icon: '🎧', desc: 'Audio mix & sound design' },
+];
+
 function SelectCard({ label, options, value, onChange, color = 'blue' }) {
   return (
     <div className="fcard">
@@ -35,6 +43,57 @@ function SelectCard({ label, options, value, onChange, color = 'blue' }) {
   );
 }
 
+function MultiServiceCard({ label, hint, services, selected, onToggle, color = 'blue' }) {
+  return (
+    <div className="fcard video-services-card">
+      <div className="fcard-label">{label}</div>
+      {hint && <p className="video-services-hint">{hint}</p>}
+      <div className="video-services-grid">
+        {services.map((s) => {
+          const active = selected.includes(s.id);
+          return (
+            <button
+              key={s.id}
+              className={`service-btn ${active ? `service-btn-${color}` : ''}`}
+              onClick={() => onToggle(s.id)}
+            >
+              <span className="service-icon">{s.icon}</span>
+              <span className="service-label">{s.label}</span>
+              <span className="service-desc">{s.desc}</span>
+              {active && <span className="service-check">✓</span>}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function YesNoCard({ label, hint, value, onChange, color = 'blue' }) {
+  return (
+    <div className="fcard">
+      <div className="fcard-label">{label}</div>
+      {hint && <p className="video-services-hint">{hint}</p>}
+      <div className="yes-no-row">
+        <button
+          className={`yes-no-btn ${value === true ? `yes-no-${color}` : ''}`}
+          onClick={() => onChange(true)}
+        >
+          ✓ Yes
+        </button>
+        <button
+          className={`yes-no-btn ${value === false ? `yes-no-${color}` : ''}`}
+          onClick={() => onChange(false)}
+        >
+          ✕ No
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const isVideo = (type) => type === 'video' || type === 'photo+video';
+
 export default function ContractorForm({ onSubmit, defaultLocation = '' }) {
   const [form, setForm] = useState({
     mediaType:       '',
@@ -45,12 +104,23 @@ export default function ContractorForm({ onSubmit, defaultLocation = '' }) {
     timeline:        '',
     experienceLevel: 1,
     location:        defaultLocation,
+    videoServices:   [],
+    providesCamera:  null,
   });
 
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleMediaType = (id) => {
-    setForm((f) => ({ ...f, mediaType: id, projectType: '' }));
+    setForm((f) => ({ ...f, mediaType: id, projectType: '', videoServices: [], providesCamera: null }));
+  };
+
+  const toggleService = (id) => {
+    setForm((f) => ({
+      ...f,
+      videoServices: f.videoServices.includes(id)
+        ? f.videoServices.filter((s) => s !== id)
+        : [...f.videoServices, id],
+    }));
   };
 
   const projectTypeOptions =
@@ -62,11 +132,18 @@ export default function ContractorForm({ onSubmit, defaultLocation = '' }) {
   const expPercent = (form.experienceLevel / (EXP_LEVELS.length - 1)) * 100;
   const thumbLeft  = `calc(${expPercent}% - 11px)`;
 
-  const canSubmit = form.mediaType && form.projectType && form.deliverables && form.clientType && form.usageRights && form.timeline;
+  const videoRequired = isVideo(form.mediaType);
+  const canSubmit =
+    form.mediaType &&
+    form.projectType &&
+    form.deliverables &&
+    form.clientType &&
+    form.usageRights &&
+    form.timeline &&
+    (!videoRequired || (form.videoServices.length > 0 && form.providesCamera !== null));
 
   return (
     <>
-      {/* Bold header */}
       <div className="form-header blue-form-header">
         <div className="form-header-eyebrow">📸 Contractor</div>
         <h1 className="form-header-title">What's this<br />project worth?</h1>
@@ -95,6 +172,27 @@ export default function ContractorForm({ onSubmit, defaultLocation = '' }) {
             })}
           </div>
         </div>
+
+        {/* Video-specific fields */}
+        {videoRequired && (
+          <>
+            <MultiServiceCard
+              label="Video Services You'll Provide"
+              hint="Select all that apply — each adds to your rate"
+              services={VIDEO_SERVICES}
+              selected={form.videoServices}
+              onToggle={toggleService}
+              color="blue"
+            />
+            <YesNoCard
+              label="Do you provide your own camera & equipment?"
+              hint="Bringing a camera package typically adds $300–800/day"
+              value={form.providesCamera}
+              onChange={set('providesCamera')}
+              color="blue"
+            />
+          </>
+        )}
 
         {form.mediaType && (
           <SelectCard label="Project Type" options={projectTypeOptions} value={form.projectType} onChange={set('projectType')} />
