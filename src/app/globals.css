@@ -117,21 +117,47 @@ button { font-family: inherit; }
 .back-btn.blue   { color: var(--blue); }
 .back-btn.purple { color: var(--purple); }
 
-/* ── Bottom Nav ─────────────────────────────── */
-.bottom-nav {
+/* ── Bottom Dock ─────────────────────────────── */
+.bottom-dock {
   display: flex;
-  justify-content: space-around;
-  padding: 10px 0 max(22px, env(safe-area-inset-bottom));
-  background: var(--surface);
-  border-top: 1px solid var(--border);
+  justify-content: center;
+  padding: 10px 20px max(20px, env(safe-area-inset-bottom));
+  background: transparent;
+  pointer-events: none;
 }
-.bn-item {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  cursor: pointer; background: none; border: none; min-width: 60px;
+.dock-pill {
+  display: flex;
+  gap: 8px;
+  background: var(--ink);
+  border-radius: 100px;
+  padding: 6px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12);
+  pointer-events: all;
 }
-.bn-icon { font-size: 20px; line-height: 1; }
-.bn-label { font-size: 10px; font-weight: 600; color: var(--ink-3); letter-spacing: 0.2px; }
-.bn-label.active { color: var(--blue); }
+.dock-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 72px;
+}
+.dock-btn:active { transform: scale(0.93); }
+.dock-btn-active { background: rgba(255,255,255,0.12); }
+.dock-icon { font-size: 20px; line-height: 1; }
+.dock-label {
+  font-size: 10px; font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.3px;
+}
+.dock-btn-active .dock-label { color: #fff; }
 
 /* ── Hero Sections ──────────────────────────── */
 .hero {

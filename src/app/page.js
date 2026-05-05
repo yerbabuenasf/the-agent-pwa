@@ -226,20 +226,22 @@ export default function App() {
       </div>
 
       {!showLoading && (
-        <nav className="bottom-nav">
-          <button className="bn-item" onClick={() => goTab('rates')}>
-            <span className="bn-icon">💰</span>
-            <span className={`bn-label ${navTab === 'rates' ? 'active' : ''}`}>Rates</span>
-          </button>
-          <button className="bn-item" onClick={() => goTab('history')}>
-            <span className="bn-icon">📋</span>
-            <span className={`bn-label ${navTab === 'history' ? 'active' : ''}`}>History</span>
-          </button>
-          <button className="bn-item" onClick={() => goTab('profile')}>
-            <span className="bn-icon">👤</span>
-            <span className={`bn-label ${navTab === 'profile' ? 'active' : ''}`}>Profile</span>
-          </button>
-        </nav>
+        <div className="bottom-dock">
+          <nav className="dock-pill">
+            <button className={`dock-btn ${navTab === 'rates' ? 'dock-btn-active' : ''}`} onClick={() => goTab('rates')}>
+              <span className="dock-icon">💰</span>
+              <span className="dock-label">Rates</span>
+            </button>
+            <button className={`dock-btn ${navTab === 'history' ? 'dock-btn-active' : ''}`} onClick={() => goTab('history')}>
+              <span className="dock-icon">📋</span>
+              <span className="dock-label">History</span>
+            </button>
+            <button className={`dock-btn ${navTab === 'profile' ? 'dock-btn-active' : ''}`} onClick={() => goTab('profile')}>
+              <span className="dock-icon">👤</span>
+              <span className="dock-label">Profile</span>
+            </button>
+          </nav>
+        </div>
       )}
 
     </div>
