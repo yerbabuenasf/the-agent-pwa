@@ -22,15 +22,30 @@ function ApprovalSheet({ role, result, formData, onClose }) {
   const isContractor = role === 'contractor';
   const color = isContractor ? 'blue' : 'purple';
 
-  const deliverables = parseDeliverables(formData?.deliverables);
-  const usageRights  = formData?.usageRights  || null;
-  const timeline     = formData?.timeline     || null;
-  const projectType  = formData?.projectType  || formData?.useCase || null;
-  const mediaType    = formData?.mediaType    || null;
+  const deliverables   = parseDeliverables(formData?.deliverables);
+  const usageRights    = formData?.usageRights  || null;
+  const timeline       = formData?.timeline     || null;
+  const projectType    = formData?.projectType  || formData?.useCase || null;
+  const mediaType      = formData?.mediaType    || null;
+  const videoServices  = formData?.videoServices || [];
+  const providesCamera = formData?.providesCamera ?? null;
+
+  const SERVICE_ICONS = {
+    'Direct':        '🎬',
+    'Shoot':         '📹',
+    'Edit':          '✂️',
+    'Color Correct': '🎨',
+    'Sound Design':  '🎧',
+  };
 
   const handleApprove = () => setApproved(true);
 
   const handleCopyProposal = () => {
+    const serviceLines = videoServices.map((id) => `• ${SERVICE_ICONS[id] || '🎥'} ${id}`);
+    const cameraLine = providesCamera !== null
+      ? (providesCamera ? `• 📦 Camera & equipment provided` : `• 📦 Client provides camera equipment`)
+      : null;
+
     const lines = [
       `📋 PROJECT PROPOSAL`,
       ``,
@@ -39,6 +54,8 @@ function ApprovalSheet({ role, result, formData, onClose }) {
       ``,
       `DELIVERABLES`,
       ...deliverables.map((d) => `• ${d}`),
+      ...(serviceLines.length > 0 ? [``, `VIDEO SERVICES`, ...serviceLines] : []),
+      cameraLine,
       ``,
       usageRights ? `Usage Rights: ${usageRights}` : null,
       timeline    ? `Timeline: ${timeline}`         : null,
@@ -83,22 +100,32 @@ function ApprovalSheet({ role, result, formData, onClose }) {
           {/* Deliverables list */}
           <div className="proposal-section">
             <div className="proposal-section-title">What's included</div>
-            {deliverables.length > 0 ? (
+            {deliverables.length > 0 || videoServices.length > 0 ? (
               <div className="deliverables-list">
                 {deliverables.map((d, i) => (
-                  <div className="deliverable-row" key={i}>
+                  <div className="deliverable-row" key={`d-${i}`}>
                     <div className={`deliverable-dot ${color}-dot`} />
                     <span className="deliverable-text">{d}</span>
                   </div>
                 ))}
+                {videoServices.length > 0 && (
+                  <>
+                    {videoServices.map((id) => (
+                      <div className="deliverable-row" key={`vs-${id}`}>
+                        <span className="deliverable-service-icon">{SERVICE_ICONS[id] || '🎥'}</span>
+                        <span className="deliverable-text">{id}</span>
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
             ) : (
               <p className="proposal-empty">No deliverables specified.</p>
             )}
           </div>
 
-          {/* Usage + timeline */}
-          {(usageRights || timeline) && (
+          {/* Usage + timeline + camera */}
+          {(usageRights || timeline || providesCamera !== null) && (
             <div className="proposal-section">
               <div className="proposal-section-title">Terms</div>
               <div className="proposal-terms">
@@ -112,6 +139,12 @@ function ApprovalSheet({ role, result, formData, onClose }) {
                   <div className="proposal-term-row">
                     <span className="proposal-term-label">Timeline</span>
                     <span className="proposal-term-value">{timeline}</span>
+                  </div>
+                )}
+                {providesCamera !== null && (
+                  <div className="proposal-term-row">
+                    <span className="proposal-term-label">Camera & Equipment</span>
+                    <span className="proposal-term-value">{providesCamera ? 'Provided by contractor' : 'Provided by client'}</span>
                   </div>
                 )}
               </div>
