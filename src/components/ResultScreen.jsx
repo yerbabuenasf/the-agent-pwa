@@ -8,19 +8,49 @@ const ICONS = {
 
 const fmt = (n) => `$${Number(n).toLocaleString()}`;
 
-function ApprovalSheet({ role, result, onClose }) {
+// Parse deliverables string into a clean array of line items
+function parseDeliverables(str = '') {
+  return str
+    .split(/[,\n+•\-–]/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 2);
+}
+
+function ApprovalSheet({ role, result, formData, onClose }) {
   const [approved, setApproved] = useState(false);
   const [copied,   setCopied]   = useState(false);
   const isContractor = role === 'contractor';
   const color = isContractor ? 'blue' : 'purple';
 
+  const deliverables = parseDeliverables(formData?.deliverables);
+  const usageRights  = formData?.usageRights  || null;
+  const timeline     = formData?.timeline     || null;
+  const projectType  = formData?.projectType  || formData?.useCase || null;
+  const mediaType    = formData?.mediaType    || null;
+
   const handleApprove = () => setApproved(true);
 
-  const handleCopyApproval = () => {
-    const text = isContractor
-      ? `✅ I've reviewed and approved the rate of ${fmt(result.recommended)} for this project. Looking forward to working together!`
-      : `✅ I've reviewed the budget proposal of ${fmt(result.recommended)} and I'm good to move forward. Let's connect!`;
-    navigator.clipboard.writeText(text).then(() => {
+  const handleCopyProposal = () => {
+    const lines = [
+      `📋 PROJECT PROPOSAL`,
+      ``,
+      `Rate: ${fmt(result.recommended)}`,
+      `Range: ${fmt(result.floor)} – ${fmt(result.ceiling)}`,
+      ``,
+      `DELIVERABLES`,
+      ...deliverables.map((d) => `• ${d}`),
+      ``,
+      usageRights ? `Usage Rights: ${usageRights}` : null,
+      timeline    ? `Timeline: ${timeline}`         : null,
+      ``,
+      approved
+        ? `✅ Status: APPROVED`
+        : `Please review and confirm by replying.`,
+      ``,
+      `— Powered by The Agent`,
+    ].filter((l) => l !== null).join('\n');
+
+    navigator.clipboard.writeText(lines).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
@@ -31,59 +61,92 @@ function ApprovalSheet({ role, result, onClose }) {
       <div className="sheet-drawer" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" />
 
-        {/* Rate summary */}
-        <div className={`sheet-hero ${color}-hero`}>
-          <div className="result-sub">
-            {isContractor ? 'Proposed Rate' : 'Proposed Budget'}
-          </div>
-          <div className="sheet-rate">{fmt(result.recommended)}</div>
-          <div className={`result-range ${color}`}>
+        {/* Proposal header */}
+        <div className="proposal-header">
+          <div className="proposal-tag">Project Proposal</div>
+          <div className="proposal-rate">{fmt(result.recommended)}</div>
+          <div className={`result-range ${color}`} style={{ fontSize: 13 }}>
             Range: {fmt(result.floor)} – {fmt(result.ceiling)}
           </div>
         </div>
 
         <div className="sheet-body">
-          {/* Factors */}
-          {result.factors?.length > 0 && (
-            <div className="factors-card" style={{ marginBottom: 14 }}>
-              <div className="factors-title">What's shaping this rate</div>
-              {result.factors.map((f, i) => (
-                <div className="factor-row" key={i}>
-                  <span className="f-icon">{f.icon}</span>
-                  <span className="f-text">{f.text}</span>
-                  <span className={`badge ${f.impact}`}>{f.impact === 'up' ? '+$' : f.impact === 'down' ? '–$' : 'info'}</span>
-                </div>
-              ))}
+
+          {/* Meta row */}
+          {(projectType || mediaType) && (
+            <div className="proposal-meta-row">
+              {mediaType    && <span className="proposal-meta-chip">{mediaType === 'photo' ? '📷 Photo' : mediaType === 'video' ? '🎬 Video' : '✨ Photo + Video'}</span>}
+              {projectType  && <span className="proposal-meta-chip">{projectType}</span>}
             </div>
           )}
 
-          {/* Approve or approved state */}
+          {/* Deliverables list */}
+          <div className="proposal-section">
+            <div className="proposal-section-title">What's included</div>
+            {deliverables.length > 0 ? (
+              <div className="deliverables-list">
+                {deliverables.map((d, i) => (
+                  <div className="deliverable-row" key={i}>
+                    <div className={`deliverable-dot ${color}-dot`} />
+                    <span className="deliverable-text">{d}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="proposal-empty">No deliverables specified.</p>
+            )}
+          </div>
+
+          {/* Usage + timeline */}
+          {(usageRights || timeline) && (
+            <div className="proposal-section">
+              <div className="proposal-section-title">Terms</div>
+              <div className="proposal-terms">
+                {usageRights && (
+                  <div className="proposal-term-row">
+                    <span className="proposal-term-label">Usage Rights</span>
+                    <span className="proposal-term-value">{usageRights}</span>
+                  </div>
+                )}
+                {timeline && (
+                  <div className="proposal-term-row">
+                    <span className="proposal-term-label">Timeline</span>
+                    <span className="proposal-term-value">{timeline}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Approve / approved */}
           {!approved ? (
             <>
-              <p className="sheet-approve-prompt">
-                {isContractor ? 'Does this rate work for you?' : 'Does this budget work for you?'}
-              </p>
               <button className={`btn ${color}`} onClick={handleApprove}>
-                ✓ Approve This {isContractor ? 'Rate' : 'Budget'}
+                ✓ Approve This Proposal
               </button>
-              <button className="sheet-cancel-btn" onClick={onClose}>
-                Not yet
-              </button>
+              <div className="proposal-action-row">
+                <button className={`btn outline-${color}`} onClick={handleCopyProposal}>
+                  {copied ? '✓ Copied!' : '📋 Copy Proposal'}
+                </button>
+                <button className="sheet-cancel-btn-inline" onClick={onClose}>
+                  Not yet
+                </button>
+              </div>
             </>
           ) : (
-            <div className="approved-card">
-              <div className="approved-check">✓</div>
-              <div className="approved-title">Rate Approved!</div>
-              <div className="approved-sub">
-                Copy the message below to send back to confirm.
+            <>
+              <div className="approved-card">
+                <div className="approved-check">✓</div>
+                <div className="approved-title">Proposal Approved!</div>
+                <div className="approved-sub">
+                  {fmt(result.recommended)} agreed. Copy and send to confirm.
+                </div>
               </div>
-              <button className="btn outline-blue" onClick={handleCopyApproval}>
-                {copied ? '✓ Copied!' : '📋 Copy Approval Message'}
+              <button className={`btn outline-${color}`} onClick={handleCopyProposal}>
+                {copied ? '✓ Copied!' : '📋 Copy Approved Proposal'}
               </button>
-              <button className="sheet-cancel-btn" onClick={onClose}>
-                Done
-              </button>
-            </div>
+              <button className="sheet-cancel-btn" onClick={onClose}>Done</button>
+            </>
           )}
         </div>
       </div>
@@ -91,9 +154,9 @@ function ApprovalSheet({ role, result, onClose }) {
   );
 }
 
-export default function ResultScreen({ role, result, onBack }) {
-  const [copied,      setCopied]      = useState(false);
-  const [showSheet,   setShowSheet]   = useState(false);
+export default function ResultScreen({ role, result, formData, onBack }) {
+  const [copied,    setCopied]    = useState(false);
+  const [showSheet, setShowSheet] = useState(false);
 
   const isContractor = role === 'contractor';
   const color        = isContractor ? 'blue' : 'purple';
@@ -207,7 +270,7 @@ export default function ResultScreen({ role, result, onBack }) {
         </button>
         <div className="action-row-2">
           <button className={`btn outline-${color}`} onClick={() => setShowSheet(true)}>
-            ↗ Get Approval
+            ↗ Send Proposal
           </button>
           <button className={`btn outline-${color}`} onClick={onBack}>
             ← Edit
@@ -217,11 +280,11 @@ export default function ResultScreen({ role, result, onBack }) {
 
       {copied && <div className="toast">Copied to clipboard ✓</div>}
 
-      {/* In-app approval sheet */}
       {showSheet && (
         <ApprovalSheet
           role={role}
           result={result}
+          formData={formData}
           onClose={() => setShowSheet(false)}
         />
       )}

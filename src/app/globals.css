@@ -979,6 +979,77 @@ button { font-family: inherit; }
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ── Proposal Sheet ──────────────────────────── */
+.proposal-header {
+  padding: 20px 20px 24px;
+  background: var(--ink);
+  text-align: center;
+}
+.proposal-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: rgba(255,255,255,0.4);
+  margin-bottom: 10px;
+}
+.proposal-rate {
+  font-size: 52px; font-weight: 800; color: #fff;
+  letter-spacing: -2px; line-height: 1; margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.proposal-meta-row {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 14px;
+}
+.proposal-meta-chip {
+  font-size: 11px; font-weight: 600;
+  background: var(--bg); color: var(--ink-2);
+  border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 100px;
+}
+.proposal-section { margin-bottom: 16px; }
+.proposal-section-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--ink-3);
+  margin-bottom: 10px;
+}
+.deliverables-list { display: flex; flex-direction: column; gap: 8px; }
+.deliverable-row {
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.deliverable-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px;
+}
+.blue-dot   { background: var(--blue); }
+.purple-dot { background: var(--purple); }
+.deliverable-text {
+  font-size: 14px; color: var(--ink); line-height: 1.5; font-weight: 500;
+}
+.proposal-empty { font-size: 13px; color: var(--ink-3); font-style: italic; }
+
+.proposal-terms {
+  background: var(--bg); border-radius: var(--r-md);
+  border: 1px solid var(--border); overflow: hidden;
+}
+.proposal-term-row {
+  display: flex; justify-content: space-between;
+  align-items: center; padding: 10px 14px;
+  border-bottom: 1px solid var(--border-2);
+}
+.proposal-term-row:last-child { border-bottom: none; }
+.proposal-term-label { font-size: 12px; font-weight: 600; color: var(--ink-3); }
+.proposal-term-value { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+.proposal-action-row {
+  display: flex; gap: 8px; margin-top: 8px; align-items: center;
+}
+.proposal-action-row .btn { flex: 1; padding: 13px; font-size: 13px; }
+.sheet-cancel-btn-inline {
+  padding: 13px 16px; background: none; border: none;
+  font-size: 13px; font-weight: 600; color: var(--ink-3);
+  cursor: pointer; font-family: inherit; white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* ── Share Banner (on ResultScreen) ─────────── */
 .share-banner {
   display: flex; align-items: center; gap: 12px;

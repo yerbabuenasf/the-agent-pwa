@@ -30,14 +30,15 @@ export default function App() {
   usePWA();
 
   // ── All state at the top ───────────────────────────────────
-  const [screen,  setScreen]  = useState('role');
-  const [role,    setRole]    = useState('');
-  const [result,  setResult]  = useState(null);
-  const [error,   setError]   = useState('');
-  const [anim,    setAnim]    = useState('');
-  const [history, setHistory] = useState([]);
-  const [profile, setProfile] = useState({});
-  const [navTab,  setNavTab]  = useState('rates'); // 'rates' | 'history' | 'profile'
+  const [screen,    setScreen]   = useState('role');
+  const [role,      setRole]     = useState('');
+  const [result,    setResult]   = useState(null);
+  const [formData,  setFormData] = useState(null);
+  const [error,     setError]    = useState('');
+  const [anim,      setAnim]     = useState('');
+  const [history,   setHistory]  = useState([]);
+  const [profile,   setProfile]  = useState({});
+  const [navTab,    setNavTab]   = useState('rates'); // 'rates' | 'history' | 'profile'
 
   // ── Load persisted data on mount ──────────────────────────
   useEffect(() => {
@@ -126,6 +127,7 @@ export default function App() {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setResult(data);
+      setFormData(formData);
       saveToHistory(formData, data);
       goForward('result');
     } catch (err) {
@@ -164,6 +166,7 @@ export default function App() {
           <ResultScreen
             role={role}
             result={result}
+            formData={formData}
             onBack={goBack}
           />
         );
