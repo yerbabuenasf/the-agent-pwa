@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import DeliverablesPicker, { serializeDeliverables } from './DeliverablesPicker';
 
 const MEDIA_TYPES = [
   { id: 'photo',       label: 'Photo',         icon: '📷', desc: 'Photography only' },
@@ -93,7 +94,7 @@ export default function EmployerForm({ onSubmit, defaultLocation = '' }) {
   const [form, setForm] = useState({
     mediaType:         '',
     useCase:           '',
-    deliverables:      '',
+    deliverables:      [],
     usageRights:       '',
     timeline:          '',
     talentLevel:       1,
@@ -107,7 +108,7 @@ export default function EmployerForm({ onSubmit, defaultLocation = '' }) {
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleMediaType = (id) => {
-    setForm((f) => ({ ...f, mediaType: id, useCase: '', videoServices: [], equipmentProvided: null }));
+    setForm((f) => ({ ...f, mediaType: id, useCase: '', deliverables: [], videoServices: [], equipmentProvided: null }));
   };
 
   const handleBudgetToggle = () => {
@@ -142,7 +143,7 @@ export default function EmployerForm({ onSubmit, defaultLocation = '' }) {
   const canSubmit =
     form.mediaType &&
     form.useCase &&
-    form.deliverables &&
+    form.deliverables.length > 0 &&
     form.usageRights &&
     form.timeline &&
     (!videoRequired || (form.videoServices.length > 0 && form.equipmentProvided !== null));
@@ -229,20 +230,14 @@ export default function EmployerForm({ onSubmit, defaultLocation = '' }) {
           <SelectCard label="What's it for?" options={useCaseOptions} value={form.useCase} onChange={set('useCase')} />
         )}
 
-        <div className="fcard">
-          <div className="fcard-label">Deliverables Needed</div>
-          <textarea
-            className="fcard-textarea"
-            placeholder={
-              form.mediaType === 'photo'       ? 'e.g. 30 edited images, 5 hero shots' :
-              form.mediaType === 'video'       ? 'e.g. 60-sec hero video + 3 social cuts' :
-              form.mediaType === 'photo+video' ? 'e.g. 20 photos + 60-sec video + BTS reel' :
-              'e.g. 30 photos + 1 hero video'
-            }
-            value={form.deliverables}
-            onChange={(e) => set('deliverables')(e.target.value)}
+        {form.mediaType && (
+          <DeliverablesPicker
+            mediaType={form.mediaType}
+            selected={form.deliverables}
+            onChange={set('deliverables')}
+            color="purple"
           />
-        </div>
+        )}
 
         <SelectCard label="Usage Rights You Need" options={USAGE_OPTIONS} value={form.usageRights} onChange={set('usageRights')} />
         <SelectCard label="Timeline"              options={TIMELINE_OPTS} value={form.timeline}    onChange={set('timeline')} />
@@ -277,7 +272,7 @@ export default function EmployerForm({ onSubmit, defaultLocation = '' }) {
       </div>
 
       <div className="cta-wrap">
-        <button className="btn purple" onClick={() => onSubmit(form)} disabled={!canSubmit}>
+        <button className="btn purple" onClick={() => onSubmit({ ...form, deliverables: serializeDeliverables(form.deliverables) })} disabled={!canSubmit}>
           ✦ {hasBudget && form.ownBudget ? 'Analyze My Budget' : 'Get Fair Budget Range'}
         </button>
         {!canSubmit && <p className="cta-hint">Fill in all fields above to continue</p>}

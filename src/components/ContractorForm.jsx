@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import DeliverablesPicker, { serializeDeliverables } from './DeliverablesPicker';
 
 const MEDIA_TYPES = [
   { id: 'photo',       label: 'Photo',         icon: '📷', desc: 'Photography only' },
@@ -98,7 +99,7 @@ export default function ContractorForm({ onSubmit, defaultLocation = '' }) {
   const [form, setForm] = useState({
     mediaType:       '',
     projectType:     '',
-    deliverables:    '',
+    deliverables:    [],
     clientType:      '',
     usageRights:     '',
     timeline:        '',
@@ -111,7 +112,7 @@ export default function ContractorForm({ onSubmit, defaultLocation = '' }) {
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleMediaType = (id) => {
-    setForm((f) => ({ ...f, mediaType: id, projectType: '', videoServices: [], providesCamera: null }));
+    setForm((f) => ({ ...f, mediaType: id, projectType: '', deliverables: [], videoServices: [], providesCamera: null }));
   };
 
   const toggleService = (id) => {
@@ -136,7 +137,7 @@ export default function ContractorForm({ onSubmit, defaultLocation = '' }) {
   const canSubmit =
     form.mediaType &&
     form.projectType &&
-    form.deliverables &&
+    form.deliverables.length > 0 &&
     form.clientType &&
     form.usageRights &&
     form.timeline &&
@@ -198,20 +199,14 @@ export default function ContractorForm({ onSubmit, defaultLocation = '' }) {
           <SelectCard label="Project Type" options={projectTypeOptions} value={form.projectType} onChange={set('projectType')} />
         )}
 
-        <div className="fcard">
-          <div className="fcard-label">Deliverables</div>
-          <textarea
-            className="fcard-textarea"
-            placeholder={
-              form.mediaType === 'photo'       ? 'e.g. 30 edited images, 5 hero shots' :
-              form.mediaType === 'video'       ? 'e.g. 60-sec hero video + 3 social cuts' :
-              form.mediaType === 'photo+video' ? 'e.g. 20 photos + 60-sec video + BTS reel' :
-              'e.g. 30 edited photos + 1 BTS reel'
-            }
-            value={form.deliverables}
-            onChange={(e) => set('deliverables')(e.target.value)}
+        {form.mediaType && (
+          <DeliverablesPicker
+            mediaType={form.mediaType}
+            selected={form.deliverables}
+            onChange={set('deliverables')}
+            color="blue"
           />
-        </div>
+        )}
 
         <SelectCard label="Client Type"         options={CLIENT_TYPES}  value={form.clientType}  onChange={set('clientType')} />
         <SelectCard label="Usage Rights"        options={USAGE_OPTIONS} value={form.usageRights} onChange={set('usageRights')} />
@@ -255,7 +250,7 @@ export default function ContractorForm({ onSubmit, defaultLocation = '' }) {
       </div>
 
       <div className="cta-wrap">
-        <button className="btn blue" onClick={() => onSubmit(form)} disabled={!canSubmit}>
+        <button className="btn blue" onClick={() => onSubmit({ ...form, deliverables: serializeDeliverables(form.deliverables) })} disabled={!canSubmit}>
           ✦ Calculate My Rate
         </button>
         {!canSubmit && (
