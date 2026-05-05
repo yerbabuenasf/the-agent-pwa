@@ -30,7 +30,7 @@ function SelectCard({ label, options, value, onChange }) {
   );
 }
 
-export default function EmployerForm({ onSubmit }) {
+export default function EmployerForm({ onSubmit, defaultLocation = '' }) {
   const [form, setForm] = useState({
     mediaType:    '',
     useCase:      '',
@@ -38,7 +38,7 @@ export default function EmployerForm({ onSubmit }) {
     usageRights:  '',
     timeline:     '',
     talentLevel:  1,
-    location:     '',
+    location:     defaultLocation,
     ownBudget:    '',
   });
   const [hasBudget, setHasBudget] = useState(false);

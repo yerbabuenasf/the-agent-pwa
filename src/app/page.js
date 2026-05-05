@@ -5,6 +5,8 @@ import RoleScreen     from '@/components/RoleScreen';
 import ContractorForm from '@/components/ContractorForm';
 import EmployerForm   from '@/components/EmployerForm';
 import ResultScreen   from '@/components/ResultScreen';
+import HistoryScreen  from '@/components/HistoryScreen';
+import ProfileScreen  from '@/components/ProfileScreen';
 
 function usePWA() {
   useEffect(() => {
@@ -14,29 +16,43 @@ function usePWA() {
   }, []);
 }
 
+const HISTORY_KEY = 'agent_history';
+const PROFILE_KEY = 'agent_profile';
+
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; }
+}
+function loadProfile() {
+  try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}'); } catch { return {}; }
+}
+
 export default function App() {
   usePWA();
 
   // ── All state at the top ───────────────────────────────────
-  const [screen, setScreen] = useState('role');
-  const [role,   setRole]   = useState('');
-  const [result, setResult] = useState(null);
-  const [error,  setError]  = useState('');
-  const [anim,   setAnim]   = useState('');
+  const [screen,  setScreen]  = useState('role');
+  const [role,    setRole]    = useState('');
+  const [result,  setResult]  = useState(null);
+  const [error,   setError]   = useState('');
+  const [anim,    setAnim]    = useState('');
+  const [history, setHistory] = useState([]);
+  const [profile, setProfile] = useState({});
+  const [navTab,  setNavTab]  = useState('rates'); // 'rates' | 'history' | 'profile'
+
+  // ── Load persisted data on mount ──────────────────────────
+  useEffect(() => {
+    setHistory(loadHistory());
+    const p = loadProfile();
+    setProfile(p);
+    if (p.defaultRole) setRole(p.defaultRole);
+  }, []);
 
   const isContractor = role === 'contractor';
   const navColor     = isContractor ? 'blue' : 'purple';
 
   // ── Navigation helpers ─────────────────────────────────────
-  function goForward(next) {
-    setAnim('slide-in');
-    setScreen(next);
-  }
-
-  function goBackward(next) {
-    setAnim('slide-back');
-    setScreen(next);
-  }
+  function goForward(next) { setAnim('slide-in');   setScreen(next); }
+  function goBackward(next) { setAnim('slide-back'); setScreen(next); }
 
   function goBack() {
     if (screen === 'result' || screen === 'error') goBackward('form');
@@ -47,6 +63,53 @@ export default function App() {
     setAnim('slide-back');
     setScreen('role');
     setResult(null);
+    setNavTab('rates');
+  }
+
+  function goTab(tab) {
+    setNavTab(tab);
+    setAnim('slide-in');
+    if (tab === 'rates')   { setScreen('role'); setResult(null); }
+    if (tab === 'history') setScreen('history');
+    if (tab === 'profile') setScreen('profile');
+  }
+
+  // ── History helpers ────────────────────────────────────────
+  function saveToHistory(formData, res) {
+    const item = {
+      id:          Date.now(),
+      date:        new Date().toISOString(),
+      role,
+      mediaType:   formData.mediaType,
+      projectType: formData.projectType || formData.useCase || 'Project',
+      recommended: res.recommended,
+      floor:       res.floor,
+      ceiling:     res.ceiling,
+      result:      res,
+    };
+    const next = [item, ...history].slice(0, 50); // keep last 50
+    setHistory(next);
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch {}
+  }
+
+  function deleteHistory(id) {
+    const next = history.filter((h) => h.id !== id);
+    setHistory(next);
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch {}
+  }
+
+  function viewHistoryItem(item) {
+    setRole(item.role);
+    setResult(item.result);
+    setNavTab('rates');
+    goForward('result');
+  }
+
+  // ── Profile save ───────────────────────────────────────────
+  function saveProfile(data) {
+    setProfile(data);
+    if (data.defaultRole) setRole(data.defaultRole);
+    try { localStorage.setItem(PROFILE_KEY, JSON.stringify(data)); } catch {}
   }
 
   // ── API call ───────────────────────────────────────────────
@@ -63,6 +126,7 @@ export default function App() {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setResult(data);
+      saveToHistory(formData, data);
       goForward('result');
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
@@ -83,8 +147,8 @@ export default function App() {
         );
       case 'form':
         return isContractor
-          ? <ContractorForm onSubmit={handleFormSubmit} />
-          : <EmployerForm   onSubmit={handleFormSubmit} />;
+          ? <ContractorForm onSubmit={handleFormSubmit} defaultLocation={profile.location} />
+          : <EmployerForm   onSubmit={handleFormSubmit} defaultLocation={profile.location} />;
       case 'loading':
         return (
           <div className="loading-wrap">
@@ -112,12 +176,29 @@ export default function App() {
             </div>
           </div>
         );
+      case 'history':
+        return (
+          <HistoryScreen
+            history={history}
+            onView={viewHistoryItem}
+            onDelete={deleteHistory}
+          />
+        );
+      case 'profile':
+        return (
+          <ProfileScreen
+            profile={profile}
+            onSave={saveProfile}
+          />
+        );
       default:
         return null;
     }
   }
 
-  const showBack = screen === 'form' || screen === 'result' || screen === 'error';
+  const showBack    = screen === 'form' || screen === 'result' || screen === 'error';
+  const showLoading = screen === 'loading';
+  const profileInitial = profile.name ? profile.name.trim()[0].toUpperCase() : 'J';
 
   return (
     <div className="app-shell">
@@ -133,27 +214,31 @@ export default function App() {
             the <span>agent</span>
           </div>
         )}
-        <div className="avatar">J</div>
+        <div className="avatar" onClick={() => goTab('profile')} style={{ cursor: 'pointer' }}>
+          {profileInitial}
+        </div>
       </nav>
 
       <div key={screen} className={`screen-content ${anim}`}>
         {renderScreen()}
       </div>
 
-      <nav className="bottom-nav">
-        <button className="bn-item" onClick={goRole}>
-          <span className="bn-icon">💰</span>
-          <span className="bn-label active">Rates</span>
-        </button>
-        <button className="bn-item">
-          <span className="bn-icon">📋</span>
-          <span className="bn-label">History</span>
-        </button>
-        <button className="bn-item">
-          <span className="bn-icon">👤</span>
-          <span className="bn-label">Profile</span>
-        </button>
-      </nav>
+      {!showLoading && (
+        <nav className="bottom-nav">
+          <button className="bn-item" onClick={() => goTab('rates')}>
+            <span className="bn-icon">💰</span>
+            <span className={`bn-label ${navTab === 'rates' ? 'active' : ''}`}>Rates</span>
+          </button>
+          <button className="bn-item" onClick={() => goTab('history')}>
+            <span className="bn-icon">📋</span>
+            <span className={`bn-label ${navTab === 'history' ? 'active' : ''}`}>History</span>
+          </button>
+          <button className="bn-item" onClick={() => goTab('profile')}>
+            <span className="bn-icon">👤</span>
+            <span className={`bn-label ${navTab === 'profile' ? 'active' : ''}`}>Profile</span>
+          </button>
+        </nav>
+      )}
 
     </div>
   );

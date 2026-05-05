@@ -35,7 +35,7 @@ function SelectCard({ label, options, value, onChange, color = 'blue' }) {
   );
 }
 
-export default function ContractorForm({ onSubmit }) {
+export default function ContractorForm({ onSubmit, defaultLocation = '' }) {
   const [form, setForm] = useState({
     mediaType:       '',
     projectType:     '',
@@ -44,7 +44,7 @@ export default function ContractorForm({ onSubmit }) {
     usageRights:     '',
     timeline:        '',
     experienceLevel: 1,
-    location:        '',
+    location:        defaultLocation,
   });
 
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
