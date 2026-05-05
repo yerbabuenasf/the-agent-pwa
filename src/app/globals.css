@@ -834,6 +834,53 @@ button { font-family: inherit; }
   color: var(--ink-3); margin-top: 14px; font-weight: 400;
 }
 
+/* ── Avatar photo upload ─────────────────────── */
+.avatar-upload-wrap {
+  position: relative;
+  width: 80px; height: 80px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.avatar-upload-wrap:active { opacity: 0.85; }
+
+.profile-avatar-photo {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255,255,255,0.2);
+  display: block;
+}
+
+.avatar-upload-badge {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 26px; height: 26px;
+  background: var(--blue);
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+
+.avatar-remove-btn {
+  margin-top: 10px;
+  background: none; border: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; font-family: inherit;
+  text-decoration: underline;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Nav avatar with photo */
+.avatar-photo {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
 /* ── Toast ──────────────────────────────────── */
 .toast {
   position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%);

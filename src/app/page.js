@@ -215,7 +215,9 @@ export default function App() {
           </div>
         )}
         <div className="avatar" onClick={() => goTab('profile')} style={{ cursor: 'pointer' }}>
-          {profileInitial}
+          {profile.avatar
+            ? <img src={profile.avatar} alt="avatar" className="avatar-photo" />
+            : profileInitial}
         </div>
       </nav>
 
