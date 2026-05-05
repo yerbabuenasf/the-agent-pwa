@@ -407,6 +407,189 @@ button { font-family: inherit; }
   border: 1px solid rgba(220,38,38,0.15);
 }
 
+/* ── Form Header — Bold & Modern ───────────── */
+.form-header {
+  padding: 40px 24px 36px;
+  position: relative;
+  overflow: hidden;
+}
+.form-header::after {
+  content: '';
+  position: absolute;
+  bottom: -50px; right: -50px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  opacity: 0.07;
+  pointer-events: none;
+}
+.blue-form-header   { background: var(--ink); }
+.blue-form-header::after   { background: var(--blue); }
+.purple-form-header { background: var(--ink); }
+.purple-form-header::after { background: var(--purple); }
+
+.form-header-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 14px;
+}
+.blue-form-header   .form-header-eyebrow { color: #93C5FD; }
+.purple-form-header .form-header-eyebrow { color: #C4B5FD; }
+
+.form-header-title {
+  font-size: 42px; font-weight: 800;
+  color: #fff; line-height: 1.05;
+  letter-spacing: -1.5px; margin-bottom: 14px;
+}
+.form-header-sub {
+  font-size: 14px; color: rgba(255,255,255,0.45);
+  line-height: 1.65; font-weight: 400; max-width: 300px;
+}
+
+/* ── Form Cards ─────────────────────────────── */
+.fcard {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+}
+.fcard-label {
+  font-size: 10px; font-weight: 700; color: var(--ink-3);
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;
+}
+.fcard-optional {
+  font-weight: 400; text-transform: none; font-size: 10px; letter-spacing: 0;
+}
+.fcard-slider-header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 14px;
+}
+.fcard-textarea {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  resize: none;
+  outline: none;
+  min-height: 72px;
+  line-height: 1.6;
+  transition: border-color 0.15s;
+}
+.fcard-textarea:focus { border-color: var(--ink-3); }
+.fcard-input {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.fcard-input:focus { border-color: var(--ink-3); }
+
+/* ── Media Type Picker ──────────────────────── */
+.media-type-row { display: flex; gap: 8px; }
+.media-btn {
+  flex: 1; padding: 14px 8px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  cursor: pointer; transition: all 0.15s;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.media-btn:active { transform: scale(0.96); }
+.media-btn-blue   { border-color: var(--blue);   background: #EEF4FF; }
+.media-btn-purple { border-color: var(--purple); background: #F3EEFF; }
+.media-icon { font-size: 24px; line-height: 1; }
+.media-label { font-size: 12px; font-weight: 700; color: var(--ink); }
+.media-label-blue   { color: var(--blue); }
+.media-label-purple { color: var(--purple); }
+.media-desc { font-size: 9px; color: var(--ink-3); font-weight: 500; text-align: center; }
+
+/* ── Budget Toggle Card ─────────────────────── */
+.budget-toggle-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  margin-bottom: 10px;
+  transition: all 0.2s;
+}
+.budget-toggle-card.budget-toggle-active {
+  border-color: var(--purple);
+  background: #F9F5FF;
+}
+.budget-toggle-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.budget-toggle-title {
+  font-size: 14px; font-weight: 700; color: var(--ink);
+  margin-bottom: 3px; letter-spacing: -0.2px;
+}
+.budget-toggle-sub {
+  font-size: 11px; color: var(--ink-3); font-weight: 400; line-height: 1.4;
+}
+
+/* Toggle switch */
+.toggle-btn {
+  width: 44px; height: 26px; border-radius: 100px;
+  background: var(--border); border: none; cursor: pointer;
+  position: relative; flex-shrink: 0;
+  transition: background 0.2s;
+  padding: 0;
+}
+.toggle-btn.toggle-on { background: var(--purple); }
+.toggle-knob {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; position: absolute;
+  top: 3px; left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-btn.toggle-on .toggle-knob { transform: translateX(18px); }
+
+/* Budget input */
+.budget-input-wrap {
+  display: flex; align-items: center;
+  margin-top: 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--purple);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.budget-dollar {
+  padding: 11px 10px 11px 14px;
+  font-size: 18px; font-weight: 700;
+  color: var(--purple);
+}
+.budget-input {
+  flex: 1; border: none; outline: none;
+  font-size: 22px; font-weight: 700;
+  font-family: inherit;
+  color: var(--ink);
+  background: transparent;
+  padding: 10px 14px 10px 2px;
+  letter-spacing: -0.5px;
+}
+.budget-input::placeholder { color: var(--ink-4); font-weight: 400; font-size: 18px; }
+
+/* ── CTA hint ───────────────────────────────── */
+.cta-hint {
+  text-align: center; font-size: 11px;
+  color: var(--ink-3); margin-top: 8px; font-weight: 500;
+}
+
 /* ── Role Screen v2 — Bold & Modern ────────── */
 .role-screen {
   display: flex;

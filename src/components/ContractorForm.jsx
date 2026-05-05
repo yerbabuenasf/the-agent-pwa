@@ -11,18 +11,22 @@ const PROJECT_TYPES_PHOTO = ['Commercial', 'Wedding', 'Editorial', 'Social Conte
 const PROJECT_TYPES_VIDEO = ['Commercial / Ad', 'Wedding Film', 'Brand Story', 'Social / Reels', 'Documentary', 'Music Video', 'Corporate', 'Event'];
 const PROJECT_TYPES_BOTH  = ['Commercial Campaign', 'Wedding Day', 'Brand Content', 'Social Package', 'Product Launch', 'Event Coverage'];
 
-const CLIENT_TYPES  = ['Ad Agency', 'Small Business', 'Fortune 500', 'Individual / Personal', 'Nonprofit'];
+const CLIENT_TYPES  = ['Ad Agency', 'Small Business', 'Large Brand', 'Individual / Personal', 'Nonprofit'];
 const USAGE_OPTIONS = ['1-Year Digital', '2-Year Digital Exclusive', 'Print + Digital', 'Unlimited / In Perpetuity', 'Editorial Only'];
 const TIMELINE_OPTS = ['Same day', '2–3 business days', '5 business days', '1–2 weeks', '1 month+'];
 const EXP_LEVELS    = ['Emerging (0–2 yrs)', 'Mid-Level (3–6 yrs)', 'Senior (7–12 yrs)', 'Top-Tier (12+ yrs)'];
 
-function SelectCard({ label, options, value, onChange }) {
+function SelectCard({ label, options, value, onChange, color = 'blue' }) {
   return (
-    <div className="card">
-      <div className="block-label">{label}</div>
+    <div className="fcard">
+      <div className="fcard-label">{label}</div>
       <div className="tags">
         {options.map((o) => (
-          <button key={o} className={`tag ${value === o ? 'sel-blue' : ''}`} onClick={() => onChange(o)}>
+          <button
+            key={o}
+            className={`tag ${value === o ? `sel-${color}` : ''}`}
+            onClick={() => onChange(o)}
+          >
             {o}
           </button>
         ))}
@@ -33,19 +37,18 @@ function SelectCard({ label, options, value, onChange }) {
 
 export default function ContractorForm({ onSubmit }) {
   const [form, setForm] = useState({
-    mediaType:      '',
-    projectType:    '',
-    deliverables:   '',
-    clientType:     '',
-    usageRights:    '',
-    timeline:       '',
+    mediaType:       '',
+    projectType:     '',
+    deliverables:    '',
+    clientType:      '',
+    usageRights:     '',
+    timeline:        '',
     experienceLevel: 1,
-    location:       '',
+    location:        '',
   });
 
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
 
-  // When media type changes, reset project type
   const handleMediaType = (id) => {
     setForm((f) => ({ ...f, mediaType: id, projectType: '' }));
   };
@@ -63,60 +66,44 @@ export default function ContractorForm({ onSubmit }) {
 
   return (
     <>
-      <div className="hero blue-hero">
-        <div className="hero-eyebrow blue">📸 Contractor Mode</div>
-        <h1>What's this project worth?</h1>
-        <p>Tell us about the job and we'll give you a rate, a range, and the words to back it up.</p>
+      {/* Bold header */}
+      <div className="form-header blue-form-header">
+        <div className="form-header-eyebrow">📸 Contractor</div>
+        <h1 className="form-header-title">What's this<br />project worth?</h1>
+        <p className="form-header-sub">Tell us about the job and we'll give you a rate, a range, and the words to back it up.</p>
       </div>
 
       <div className="form-body">
 
-        {/* Media Type — big 3-card selector */}
-        <div className="card">
-          <div className="block-label">What are you shooting?</div>
-          <div style={{ display: 'flex', gap: 8 }}>
+        {/* Media Type */}
+        <div className="fcard">
+          <div className="fcard-label">What are you shooting?</div>
+          <div className="media-type-row">
             {MEDIA_TYPES.map((m) => {
-              const selected = form.mediaType === m.id;
+              const sel = form.mediaType === m.id;
               return (
                 <button
                   key={m.id}
+                  className={`media-btn ${sel ? 'media-btn-blue' : ''}`}
                   onClick={() => handleMediaType(m.id)}
-                  style={{
-                    flex: 1, padding: '14px 8px', borderRadius: 14,
-                    border: `2px solid ${selected ? '#4F8EF7' : '#E5E7EB'}`,
-                    background: selected ? '#EEF4FF' : '#fff',
-                    cursor: 'pointer', transition: 'all 0.15s',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
-                  }}
                 >
-                  <span style={{ fontSize: 26 }}>{m.icon}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: selected ? '#4F8EF7' : '#0F172A' }}>{m.label}</span>
-                  <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 500 }}>{m.desc}</span>
+                  <span className="media-icon">{m.icon}</span>
+                  <span className={`media-label ${sel ? 'media-label-blue' : ''}`}>{m.label}</span>
+                  <span className="media-desc">{m.desc}</span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Project Type — appears after media type is chosen */}
         {form.mediaType && (
-          <SelectCard
-            label="Project Type"
-            options={projectTypeOptions}
-            value={form.projectType}
-            onChange={set('projectType')}
-          />
+          <SelectCard label="Project Type" options={projectTypeOptions} value={form.projectType} onChange={set('projectType')} />
         )}
 
-        <div className="card">
-          <div className="block-label">Deliverables</div>
+        <div className="fcard">
+          <div className="fcard-label">Deliverables</div>
           <textarea
-            style={{
-              width: '100%', border: '1.5px solid #E5E7EB', borderRadius: 10,
-              padding: '10px 12px', fontSize: 14, fontFamily: 'inherit',
-              color: '#0F172A', background: '#F7F9FC', resize: 'none', outline: 'none',
-              minHeight: 72, lineHeight: 1.5,
-            }}
+            className="fcard-textarea"
             placeholder={
               form.mediaType === 'photo'       ? 'e.g. 30 edited images, 5 hero shots' :
               form.mediaType === 'video'       ? 'e.g. 60-sec hero video + 3 social cuts' :
@@ -128,34 +115,30 @@ export default function ContractorForm({ onSubmit }) {
           />
         </div>
 
-        <SelectCard label="Client Type"         options={CLIENT_TYPES}   value={form.clientType}  onChange={set('clientType')} />
-        <SelectCard label="Usage Rights"        options={USAGE_OPTIONS}  value={form.usageRights} onChange={set('usageRights')} />
-        <SelectCard label="Turnaround Timeline" options={TIMELINE_OPTS}  value={form.timeline}    onChange={set('timeline')} />
+        <SelectCard label="Client Type"         options={CLIENT_TYPES}  value={form.clientType}  onChange={set('clientType')} />
+        <SelectCard label="Usage Rights"        options={USAGE_OPTIONS} value={form.usageRights} onChange={set('usageRights')} />
+        <SelectCard label="Turnaround Timeline" options={TIMELINE_OPTS} value={form.timeline}    onChange={set('timeline')} />
 
-        <div className="card">
-          <div className="block-label">Your Location <span style={{ fontWeight: 400, textTransform: 'none', fontSize: 10 }}>(optional)</span></div>
+        <div className="fcard">
+          <div className="fcard-label">Your Location <span className="fcard-optional">(optional)</span></div>
           <input
             type="text"
-            style={{
-              width: '100%', border: '1.5px solid #E5E7EB', borderRadius: 10,
-              padding: '10px 12px', fontSize: 14, fontFamily: 'inherit',
-              color: '#0F172A', background: '#F7F9FC', outline: 'none',
-            }}
+            className="fcard-input"
             placeholder="e.g. New York, NY"
             value={form.location}
             onChange={(e) => set('location')(e.target.value)}
           />
         </div>
 
-        <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <span className="block-label" style={{ marginBottom: 0 }}>Your Experience Level</span>
+        <div className="fcard">
+          <div className="fcard-slider-header">
+            <span className="fcard-label" style={{ marginBottom: 0 }}>Your Experience Level</span>
             <span className="slider-val">{expLabel.split(' (')[0]}</span>
           </div>
           <div className="slider-wrap">
             <div className="slider-track">
               <div className="slider-fill blue" style={{ width: `${expPercent}%` }} />
-              <div className="slider-thumb blue" style={{ left: thumbLeft }} />
+              <div className="slider-thumb" style={{ left: thumbLeft }} />
               <input
                 type="range" min={0} max={3} step={1}
                 value={form.experienceLevel}
@@ -178,9 +161,7 @@ export default function ContractorForm({ onSubmit }) {
           ✦ Calculate My Rate
         </button>
         {!canSubmit && (
-          <p style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', marginTop: 8 }}>
-            Fill in all fields above to continue
-          </p>
+          <p className="cta-hint">Fill in all fields above to continue</p>
         )}
       </div>
     </>

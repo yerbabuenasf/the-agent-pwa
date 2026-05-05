@@ -17,8 +17,8 @@ const TALENT_LEVELS = ['Emerging (budget-friendly)', 'Experienced (mid-market)',
 
 function SelectCard({ label, options, value, onChange }) {
   return (
-    <div className="card">
-      <div className="block-label">{label}</div>
+    <div className="fcard">
+      <div className="fcard-label">{label}</div>
       <div className="tags">
         {options.map((o) => (
           <button key={o} className={`tag ${value === o ? 'sel-purple' : ''}`} onClick={() => onChange(o)}>
@@ -39,12 +39,25 @@ export default function EmployerForm({ onSubmit }) {
     timeline:     '',
     talentLevel:  1,
     location:     '',
+    ownBudget:    '',
   });
+  const [hasBudget, setHasBudget] = useState(false);
 
   const set = (k) => (v) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleMediaType = (id) => {
     setForm((f) => ({ ...f, mediaType: id, useCase: '' }));
+  };
+
+  const handleBudgetToggle = () => {
+    setHasBudget((b) => !b);
+    if (hasBudget) setForm((f) => ({ ...f, ownBudget: '' }));
+  };
+
+  const handleBudgetInput = (e) => {
+    // Strip non-numeric characters
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    set('ownBudget')(raw);
   };
 
   const useCaseOptions =
@@ -58,37 +71,67 @@ export default function EmployerForm({ onSubmit }) {
 
   const canSubmit = form.mediaType && form.useCase && form.deliverables && form.usageRights && form.timeline;
 
+  const budgetDisplay = form.ownBudget
+    ? `$${Number(form.ownBudget).toLocaleString()}`
+    : '';
+
   return (
     <>
-      <div className="hero purple-hero">
-        <div className="hero-eyebrow purple">🏢 Employer Mode</div>
-        <h1>What should you budget for this?</h1>
-        <p>Describe the project and we'll show you the fair market rate — so you make an offer that lands.</p>
+      {/* Bold header */}
+      <div className="form-header purple-form-header">
+        <div className="form-header-eyebrow">🏢 Employer</div>
+        <h1 className="form-header-title">What should<br />you budget?</h1>
+        <p className="form-header-sub">Describe the project and we'll show you the fair market rate — so you make an offer that lands.</p>
       </div>
 
       <div className="form-body">
 
-        {/* Media Type — big 3-card selector */}
-        <div className="card">
-          <div className="block-label">What do you need?</div>
-          <div style={{ display: 'flex', gap: 8 }}>
+        {/* Set Budget Toggle */}
+        <div className={`budget-toggle-card ${hasBudget ? 'budget-toggle-active' : ''}`}>
+          <div className="budget-toggle-top">
+            <div>
+              <div className="budget-toggle-title">I have a set budget</div>
+              <div className="budget-toggle-sub">Get recommendations tailored to what you can spend</div>
+            </div>
+            <button
+              className={`toggle-btn ${hasBudget ? 'toggle-on' : ''}`}
+              onClick={handleBudgetToggle}
+              aria-label="Toggle budget"
+            >
+              <div className="toggle-knob" />
+            </button>
+          </div>
+
+          {hasBudget && (
+            <div className="budget-input-wrap">
+              <span className="budget-dollar">$</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                className="budget-input"
+                placeholder="e.g. 2,500"
+                value={budgetDisplay.replace('$', '')}
+                onChange={handleBudgetInput}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Media Type */}
+        <div className="fcard">
+          <div className="fcard-label">What do you need?</div>
+          <div className="media-type-row">
             {MEDIA_TYPES.map((m) => {
-              const selected = form.mediaType === m.id;
+              const sel = form.mediaType === m.id;
               return (
                 <button
                   key={m.id}
+                  className={`media-btn ${sel ? 'media-btn-purple' : ''}`}
                   onClick={() => handleMediaType(m.id)}
-                  style={{
-                    flex: 1, padding: '14px 8px', borderRadius: 14,
-                    border: `2px solid ${selected ? '#7B5CF7' : '#E5E7EB'}`,
-                    background: selected ? '#F5F0FF' : '#fff',
-                    cursor: 'pointer', transition: 'all 0.15s',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
-                  }}
                 >
-                  <span style={{ fontSize: 26 }}>{m.icon}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: selected ? '#7B5CF7' : '#0F172A' }}>{m.label}</span>
-                  <span style={{ fontSize: 10, color: '#9CA3AF', fontWeight: 500 }}>{m.desc}</span>
+                  <span className="media-icon">{m.icon}</span>
+                  <span className={`media-label ${sel ? 'media-label-purple' : ''}`}>{m.label}</span>
+                  <span className="media-desc">{m.desc}</span>
                 </button>
               );
             })}
@@ -96,23 +139,13 @@ export default function EmployerForm({ onSubmit }) {
         </div>
 
         {form.mediaType && (
-          <SelectCard
-            label="What's it for?"
-            options={useCaseOptions}
-            value={form.useCase}
-            onChange={set('useCase')}
-          />
+          <SelectCard label="What's it for?" options={useCaseOptions} value={form.useCase} onChange={set('useCase')} />
         )}
 
-        <div className="card">
-          <div className="block-label">Deliverables Needed</div>
+        <div className="fcard">
+          <div className="fcard-label">Deliverables Needed</div>
           <textarea
-            style={{
-              width: '100%', border: '1.5px solid #E5E7EB', borderRadius: 10,
-              padding: '10px 12px', fontSize: 14, fontFamily: 'inherit',
-              color: '#0F172A', background: '#F7F9FC', resize: 'none', outline: 'none',
-              minHeight: 72, lineHeight: 1.5,
-            }}
+            className="fcard-textarea"
             placeholder={
               form.mediaType === 'photo'       ? 'e.g. 30 edited images, 5 hero shots' :
               form.mediaType === 'video'       ? 'e.g. 60-sec hero video + 3 social cuts' :
@@ -127,30 +160,26 @@ export default function EmployerForm({ onSubmit }) {
         <SelectCard label="Usage Rights You Need" options={USAGE_OPTIONS} value={form.usageRights} onChange={set('usageRights')} />
         <SelectCard label="Timeline"              options={TIMELINE_OPTS} value={form.timeline}    onChange={set('timeline')} />
 
-        <div className="card">
-          <div className="block-label">Location <span style={{ fontWeight: 400, textTransform: 'none', fontSize: 10 }}>(optional)</span></div>
+        <div className="fcard">
+          <div className="fcard-label">Location <span className="fcard-optional">(optional)</span></div>
           <input
             type="text"
-            style={{
-              width: '100%', border: '1.5px solid #E5E7EB', borderRadius: 10,
-              padding: '10px 12px', fontSize: 14, fontFamily: 'inherit',
-              color: '#0F172A', background: '#F7F9FC', outline: 'none',
-            }}
+            className="fcard-input"
             placeholder="e.g. Los Angeles, CA"
             value={form.location}
             onChange={(e) => set('location')(e.target.value)}
           />
         </div>
 
-        <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <span className="block-label" style={{ marginBottom: 0 }}>Talent Level Preferred</span>
+        <div className="fcard">
+          <div className="fcard-slider-header">
+            <span className="fcard-label" style={{ marginBottom: 0 }}>Talent Level Preferred</span>
             <span className="slider-val">{talentLabel.split(' (')[0]}</span>
           </div>
           <div className="slider-wrap">
             <div className="slider-track">
               <div className="slider-fill purple" style={{ width: `${talentPercent}%` }} />
-              <div className="slider-thumb purple" style={{ left: thumbLeft }} />
+              <div className="slider-thumb" style={{ left: thumbLeft }} />
               <input
                 type="range" min={0} max={3} step={1}
                 value={form.talentLevel}
@@ -170,12 +199,10 @@ export default function EmployerForm({ onSubmit }) {
 
       <div className="cta-wrap">
         <button className="btn purple" onClick={() => onSubmit(form)} disabled={!canSubmit}>
-          ✦ Get Fair Budget Range
+          ✦ {hasBudget && form.ownBudget ? 'Analyze My Budget' : 'Get Fair Budget Range'}
         </button>
         {!canSubmit && (
-          <p style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', marginTop: 8 }}>
-            Fill in all fields above to continue
-          </p>
+          <p className="cta-hint">Fill in all fields above to continue</p>
         )}
       </div>
     </>

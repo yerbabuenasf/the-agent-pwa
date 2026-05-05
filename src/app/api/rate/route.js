@@ -39,6 +39,15 @@ Project details:
 - Timeline: ${data.timeline}
 - Talent level preferred: ${data.talentLevel}
 - Location: ${data.location || 'Not specified'}
+${data.ownBudget ? `- EMPLOYER'S SET BUDGET: $${Number(data.ownBudget).toLocaleString()}
+
+IMPORTANT — The employer has given you a specific budget to work with. Your job shifts:
+1. Tell them honestly whether this budget is realistic for what they're asking (use the rationale field)
+2. Set "recommended" to the fair market rate — not their budget — so they understand the real market
+3. If their budget is BELOW the floor, the rationale should clearly explain the gap and what they'd need to cut to make it work
+4. If their budget is WITHIN the range, affirm it and help them make a strong offer
+5. If their budget is ABOVE the ceiling, tell them they have room to negotiate down
+6. All savings suggestions should be SPECIFICALLY about making their $${Number(data.ownBudget).toLocaleString()} budget work, not generic tips` : ''}
 
 IMPORTANT RATE GUIDANCE:
 - Photo-only projects: typically $800–$3,500/day depending on talent tier and usage
