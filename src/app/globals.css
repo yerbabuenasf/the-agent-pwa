@@ -907,6 +907,107 @@ button { font-family: inherit; }
   display: block;
 }
 
+/* ── Share Banner (on ResultScreen) ─────────── */
+.share-banner {
+  display: flex; align-items: center; gap: 12px;
+  border-radius: var(--r-lg); padding: 14px 16px;
+  margin-bottom: 10px; cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.share-banner:active { transform: scale(0.98); }
+.blue-share   { background: var(--blue-light);   border: 1px solid rgba(37,99,235,0.2); }
+.purple-share { background: var(--purple-light); border: 1px solid rgba(124,58,237,0.2); }
+.share-banner-left { flex: 1; }
+.share-banner-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.share-banner-sub   { font-size: 12px; color: var(--ink-2); line-height: 1.4; }
+.share-banner-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--blue); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; flex-shrink: 0;
+}
+.purple-share .share-banner-btn { background: var(--purple); }
+
+/* ── Share Page ──────────────────────────────── */
+.share-page {
+  max-width: 430px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+.share-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.share-topbar-tag {
+  font-size: 11px; font-weight: 700;
+  color: var(--ink-3); letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.share-loading {
+  flex: 1; display: flex;
+  align-items: center; justify-content: center;
+}
+.share-invalid {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px; text-align: center;
+}
+.share-invalid h2 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+.share-invalid p  { font-size: 14px; color: var(--ink-2); margin-bottom: 24px; }
+
+/* ── Approve Card ───────────────────────────── */
+.approve-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px 16px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.approve-title { font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.3px; }
+.approve-sub   { font-size: 13px; color: var(--ink-2); line-height: 1.55; margin-bottom: 16px; }
+
+.approved-card {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--r-lg);
+  padding: 24px 16px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.approved-check {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: #16A34A; color: #fff;
+  font-size: 24px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 12px;
+}
+.approved-title { font-size: 20px; font-weight: 800; color: #15803D; margin-bottom: 6px; }
+.approved-sub   { font-size: 13px; color: #166534; line-height: 1.55; margin-bottom: 16px; }
+
+/* ── Share Footer ───────────────────────────── */
+.share-footer {
+  padding: 24px 0 32px;
+  text-align: center;
+}
+.share-footer-text {
+  font-size: 12px; color: var(--ink-3);
+  line-height: 1.6; margin-bottom: 10px; font-weight: 400;
+}
+.share-cta-link {
+  font-size: 14px; font-weight: 700;
+  color: var(--blue); text-decoration: none;
+}
+.share-cta-link:hover { text-decoration: underline; }
+
 /* ── Toast ──────────────────────────────────── */
 .toast {
   position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%);

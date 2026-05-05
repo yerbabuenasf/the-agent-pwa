@@ -6,18 +6,28 @@ const ICONS = {
   employer:   { low: 'Minimum', mid: 'Fair', high: 'Top-Tier' },
 };
 
+function encodeShareData(data) {
+  try {
+    return btoa(JSON.stringify(data))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  } catch { return null; }
+}
+
 export default function ResultScreen({ role, result, onBack }) {
-  const [copied, setCopied] = useState(false);
+  const [copied,  setCopied]  = useState(false);
+  const [shared,  setShared]  = useState(false);
+
   const isContractor = role === 'contractor';
   const color        = isContractor ? 'blue' : 'purple';
   const labels       = ICONS[role];
 
-  const floorPct  = 44;
-  const midPct    = Math.round((result.recommended / result.ceiling) * 95);
-  const highPct   = 100;
+  const floorPct = 44;
+  const midPct   = Math.round((result.recommended / result.ceiling) * 95);
+  const highPct  = 100;
 
   const fmt = (n) => `$${Number(n).toLocaleString()}`;
 
+  // ── Copy rate + script ────────────────────────
   const handleCopy = () => {
     const text = isContractor
       ? `My rate for this project: ${fmt(result.recommended)}\nRange: ${fmt(result.floor)} – ${fmt(result.ceiling)}\n\n${result.script}`
@@ -26,6 +36,34 @@ export default function ResultScreen({ role, result, onBack }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     });
+  };
+
+  // ── Share link ────────────────────────────────
+  const handleShare = async () => {
+    const encoded = encodeShareData({ role, result });
+    if (!encoded) return;
+
+    const base = typeof window !== 'undefined' ? window.location.origin : '';
+    const url  = `${base}/share?d=${encoded}`;
+    const recipient = isContractor ? 'your client' : 'the contractor';
+    const title = isContractor
+      ? `My rate for this project: ${fmt(result.recommended)}`
+      : `Project budget proposal: ${fmt(result.recommended)}`;
+    const text = `Hey! I used The Agent to ${isContractor ? 'calculate my rate' : 'work out a fair budget'} for our project. Take a look and let me know if you approve.\n\n${title}\n`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'The Agent — Rate Proposal', text, url });
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      } catch {}
+    } else {
+      // Fallback: copy link to clipboard
+      navigator.clipboard.writeText(url).then(() => {
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      });
+    }
   };
 
   return (
@@ -44,6 +82,21 @@ export default function ResultScreen({ role, result, onBack }) {
       </div>
 
       <div className="form-body" style={{ paddingBottom: 0 }}>
+
+        {/* Share banner */}
+        <div className={`share-banner ${color}-share`} onClick={handleShare}>
+          <div className="share-banner-left">
+            <div className="share-banner-title">
+              {isContractor ? 'Send to your client for approval' : 'Send to contractor for approval'}
+            </div>
+            <div className="share-banner-sub">
+              They'll see the full breakdown and can approve the rate
+            </div>
+          </div>
+          <div className="share-banner-btn">
+            {shared ? '✓' : '↗'}
+          </div>
+        </div>
 
         {/* Rate Bar Breakdown */}
         <div className="card">
@@ -125,6 +178,7 @@ export default function ResultScreen({ role, result, onBack }) {
       </div>
 
       {copied && <div className="toast">Copied to clipboard ✓</div>}
+      {shared && <div className="toast">Link copied! Send it to them ✓</div>}
     </>
   );
 }
