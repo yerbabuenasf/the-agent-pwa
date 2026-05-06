@@ -207,16 +207,28 @@ export default function App() {
     <div className="app-shell">
 
       <nav className="top-nav">
-        {showBack ? (
-          <button className={`back-btn ${navColor}`} onClick={goBack}>‹ Back</button>
-        ) : (
-          <div className="logo">the <span>agent</span></div>
-        )}
-        {showBack && (
+        <div className="top-nav-left">
+          {showBack ? (
+            <button className={`back-btn ${navColor}`} onClick={goBack}>‹ Back</button>
+          ) : null}
           <div className="logo" onClick={goRole} style={{ cursor: 'pointer' }}>
             the <span>agent</span>
           </div>
-        )}
+        </div>
+
+        {/* Desktop-only inline tabs */}
+        <div className="desktop-nav-tabs">
+          <button className={`desktop-tab ${navTab === 'rates' ? 'desktop-tab-active' : ''}`} onClick={() => goTab('rates')}>
+            💰 Rates
+          </button>
+          <button className={`desktop-tab ${navTab === 'history' ? 'desktop-tab-active' : ''}`} onClick={() => goTab('history')}>
+            📋 History
+          </button>
+          <button className={`desktop-tab ${navTab === 'profile' ? 'desktop-tab-active' : ''}`} onClick={() => goTab('profile')}>
+            👤 Profile
+          </button>
+        </div>
+
         <div className="avatar" onClick={() => goTab('profile')} style={{ cursor: 'pointer' }}>
           {profile.avatar
             ? <img src={profile.avatar} alt="avatar" className="avatar-photo" />

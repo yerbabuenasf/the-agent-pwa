@@ -1256,3 +1256,188 @@ button { font-family: inherit; }
 }
 @keyframes toastIn  { from { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.94); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
 @keyframes toastOut { to   { opacity: 0; transform: translateX(-50%) translateY(4px); } }
+
+/* ────────────────────────────────────────────────
+   DESKTOP (≥768px) — Website Layout
+   ──────────────────────────────────────────────── */
+
+/* Hide desktop-only elements on mobile */
+.desktop-nav-tabs  { display: none; }
+.action-wrap-desktop { display: none; }
+
+/* Result layout — single col on mobile */
+.result-desktop-grid {
+  padding: 16px 16px 0;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.result-left-col, .result-right-col { display: contents; }
+
+/* Role screen — single col on mobile */
+.role-desktop-wrap { display: contents; }
+.role-hero-col { display: contents; }
+.role-cards-col { display: contents; }
+.role-hero-badges { display: none; }
+.top-nav-left { display: contents; }
+
+@media (min-width: 768px) {
+
+  /* ── Shell ─────────────────────────────────── */
+  .app-shell {
+    max-width: 1040px;
+    box-shadow: none;
+  }
+
+  /* ── Top Nav ────────────────────────────────── */
+  .top-nav {
+    padding: 0 32px;
+    height: 60px;
+    min-height: 60px;
+  }
+  .top-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo { font-size: 18px; }
+  .avatar { width: 36px; height: 36px; font-size: 13px; }
+
+  /* ── Desktop Nav Tabs ──────────────────────── */
+  .desktop-nav-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .desktop-tab {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .desktop-tab:hover { background: var(--border-2); color: var(--ink); }
+  .desktop-tab-active { background: var(--blue-light); color: var(--blue); }
+
+  /* ── Hide mobile bottom dock ────────────────── */
+  .bottom-dock { display: none; }
+
+  /* ── Screen content padding ─────────────────── */
+  .screen-content { padding-bottom: 40px; }
+
+  /* ── Role Screen — Split Hero ───────────────── */
+  .role-screen { padding: 0; }
+  .role-desktop-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: calc(100dvh - 60px);
+    align-items: stretch;
+  }
+  .role-hero-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 64px 56px;
+    background: linear-gradient(150deg, #0F172A 0%, #1E3A8A 100%);
+    color: #fff;
+  }
+  .role-header-eyebrow {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 16px;
+  }
+  .role-header-title {
+    font-size: 56px; font-weight: 800;
+    line-height: 1.0; letter-spacing: -2px;
+    color: #fff; margin-bottom: 20px;
+  }
+  .role-header-sub {
+    font-size: 16px; color: rgba(255,255,255,0.65);
+    line-height: 1.6; max-width: 360px; margin-bottom: 28px;
+  }
+  .role-hero-badges {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px;
+  }
+  .role-badge {
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.75);
+  }
+  .role-footer {
+    font-size: 12px; color: rgba(255,255,255,0.3); font-weight: 500;
+    margin-top: 0;
+  }
+
+  .role-cards-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 56px 48px;
+    background: var(--bg);
+  }
+  /* Hide mobile-only elements on desktop */
+  .role-header { display: none; }
+  .role-footer-mobile { display: none; }
+  .role-prompt { font-size: 13px; }
+  .role-body { all: unset; display: flex; flex-direction: column; gap: 16px; }
+  .role-cards-v2 { gap: 14px; }
+  .role-card-v2 { padding: 20px; }
+  .rcv2-label { font-size: 18px; }
+  .rcv2-desc  { font-size: 13px; }
+  .role-cta   { font-size: 16px; padding: 17px; }
+
+  /* ── Form Screens ────────────────────────────── */
+  .form-header { padding: 40px 40px 32px; }
+  .form-header-title { font-size: 36px; }
+  .form-body { padding: 0 40px 24px; max-width: 680px; }
+
+  /* ── Result Screen — Two-Column Grid ─────────── */
+  .result-hero {
+    padding: 36px 40px;
+    border-radius: 0;
+  }
+  .result-rate { font-size: 52px; }
+
+  .result-desktop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 28px 40px 32px;
+    align-items: start;
+  }
+  .result-left-col {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .result-right-col {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  /* Desktop: action buttons inside left col */
+  .action-wrap-desktop { display: flex; flex-direction: column; gap: 10px; }
+  .action-wrap-mobile  { display: none; }
+  .action-wrap-desktop .action-row-2 { display: flex; gap: 10px; }
+  .action-wrap-desktop .btn { width: 100%; }
+
+  /* ── Toast ───────────────────────────────────── */
+  .toast { bottom: 32px; }
+
+  /* ── Cards/Spacing ───────────────────────────── */
+  .card, .factors-card, .script-card, .savings-card { padding: 20px; }
+  .fcard { padding: 18px 20px; }
+  .cta-wrap { padding: 20px 40px 32px; }
+
+  /* ── History + Profile ───────────────────────── */
+  .history-screen  { padding: 28px 40px; }
+  .profile-screen  { padding: 28px 40px; }
+
+  /* ── Loading ─────────────────────────────────── */
+  .loading-wrap { padding: 80px 40px; }
+}

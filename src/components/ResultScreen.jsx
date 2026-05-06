@@ -224,80 +224,102 @@ export default function ResultScreen({ role, result, formData, onBack }) {
         )}
       </div>
 
-      <div className="form-body" style={{ paddingBottom: 0 }}>
+      <div className="result-desktop-grid">
 
-        {/* Rate Bars */}
-        <div className="card">
-          <div className="block-label">{isContractor ? 'Rate Breakdown' : 'Budget Breakdown'}</div>
-          <div className="bar-row">
-            <span className="bar-lbl">{labels.low}</span>
-            <div className="bar-track"><div className="bar-fill low" style={{ width: `${floorPct}%` }} /></div>
-            <span className="bar-amt">{fmt(result.floor)}</span>
+        {/* LEFT column */}
+        <div className="result-left-col">
+          {/* Rate Bars */}
+          <div className="card">
+            <div className="block-label">{isContractor ? 'Rate Breakdown' : 'Budget Breakdown'}</div>
+            <div className="bar-row">
+              <span className="bar-lbl">{labels.low}</span>
+              <div className="bar-track"><div className="bar-fill low" style={{ width: `${floorPct}%` }} /></div>
+              <span className="bar-amt">{fmt(result.floor)}</span>
+            </div>
+            <div className="bar-row">
+              <span className="bar-lbl">{labels.mid}</span>
+              <div className="bar-track"><div className={`bar-fill mid-${color[0]}`} style={{ width: `${midPct}%` }} /></div>
+              <span className="bar-amt">{fmt(result.recommended)}</span>
+            </div>
+            <div className="bar-row">
+              <span className="bar-lbl">{labels.high}</span>
+              <div className="bar-track"><div className={`bar-fill high-${color[0]}`} style={{ width: `${highPct}%` }} /></div>
+              <span className="bar-amt">{fmt(result.ceiling)}</span>
+            </div>
           </div>
-          <div className="bar-row">
-            <span className="bar-lbl">{labels.mid}</span>
-            <div className="bar-track"><div className={`bar-fill mid-${color[0]}`} style={{ width: `${midPct}%` }} /></div>
-            <span className="bar-amt">{fmt(result.recommended)}</span>
-          </div>
-          <div className="bar-row">
-            <span className="bar-lbl">{labels.high}</span>
-            <div className="bar-track"><div className={`bar-fill high-${color[0]}`} style={{ width: `${highPct}%` }} /></div>
-            <span className="bar-amt">{fmt(result.ceiling)}</span>
+
+          {/* Action buttons */}
+          <div className="action-wrap action-wrap-desktop">
+            <button className={`btn ${color}`} onClick={handleCopy}>
+              📋 {isContractor ? 'Copy Rate + Script' : 'Copy Budget + Script'}
+            </button>
+            <div className="action-row-2">
+              <button className={`btn outline-${color}`} onClick={() => setShowSheet(true)}>
+                ↗ Send Proposal
+              </button>
+              <button className={`btn outline-${color}`} onClick={onBack}>
+                ← Edit
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Factors */}
-        {result.factors?.length > 0 && (
-          <div className="factors-card">
-            <div className="factors-title">
-              {isContractor ? "What's driving your rate" : "What's shaping this budget"}
-            </div>
-            {result.factors.map((f, i) => (
-              <div className="factor-row" key={i}>
-                <span className="f-icon">{f.icon}</span>
-                <span className="f-text">{f.text}</span>
-                <span className={`badge ${f.impact}`}>{f.impact === 'up' ? '+$' : f.impact === 'down' ? '–$' : 'info'}</span>
+        {/* RIGHT column */}
+        <div className="result-right-col">
+          {/* Factors */}
+          {result.factors?.length > 0 && (
+            <div className="factors-card">
+              <div className="factors-title">
+                {isContractor ? "What's driving your rate" : "What's shaping this budget"}
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Script */}
-        {result.script && (
-          <div className={`script-card ${color}`}>
-            <div className={`script-title ${color}`}>
-              💬 {isContractor ? "If they say it's too high..." : 'How to make an offer that lands...'}
-            </div>
-            <div className={`script-text ${isContractor ? '' : 'purple'}`}>
-              "{result.script}"
-            </div>
-          </div>
-        )}
-
-        {/* Savings — employer only */}
-        {!isContractor && result.savings?.length > 0 && (
-          <>
-            <div className="savings-divider">
-              <div className="savings-line" />
-              <span className="savings-label">Ways to bring the cost down</span>
-              <div className="savings-line" />
-            </div>
-            <div className="savings-card">
-              <div className="savings-title">💡 Budget-saving options</div>
-              {result.savings.map((s, i) => (
-                <div className="savings-row" key={i}>
-                  <span className="f-icon">{s.icon}</span>
-                  <span className="f-text">{s.suggestion}</span>
-                  <span className="savings-impact">{s.impact}</span>
+              {result.factors.map((f, i) => (
+                <div className="factor-row" key={i}>
+                  <span className="f-icon">{f.icon}</span>
+                  <span className="f-text">{f.text}</span>
+                  <span className={`badge ${f.impact}`}>{f.impact === 'up' ? '+$' : f.impact === 'down' ? '–$' : 'info'}</span>
                 </div>
               ))}
             </div>
-          </>
-        )}
+          )}
+
+          {/* Script */}
+          {result.script && (
+            <div className={`script-card ${color}`}>
+              <div className={`script-title ${color}`}>
+                💬 {isContractor ? "If they say it's too high..." : 'How to make an offer that lands...'}
+              </div>
+              <div className={`script-text ${isContractor ? '' : 'purple'}`}>
+                "{result.script}"
+              </div>
+            </div>
+          )}
+
+          {/* Savings — employer only */}
+          {!isContractor && result.savings?.length > 0 && (
+            <>
+              <div className="savings-divider">
+                <div className="savings-line" />
+                <span className="savings-label">Ways to bring the cost down</span>
+                <div className="savings-line" />
+              </div>
+              <div className="savings-card">
+                <div className="savings-title">💡 Budget-saving options</div>
+                {result.savings.map((s, i) => (
+                  <div className="savings-row" key={i}>
+                    <span className="f-icon">{s.icon}</span>
+                    <span className="f-text">{s.suggestion}</span>
+                    <span className="savings-impact">{s.impact}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
       </div>
 
-      {/* Action buttons */}
-      <div className="action-wrap">
+      {/* Mobile-only action buttons (hidden on desktop via CSS) */}
+      <div className="action-wrap action-wrap-mobile">
         <button className={`btn ${color}`} onClick={handleCopy}>
           📋 {isContractor ? 'Copy Rate + Script' : 'Copy Budget + Script'}
         </button>
