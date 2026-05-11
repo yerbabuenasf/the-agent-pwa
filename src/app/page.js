@@ -24,11 +24,11 @@ export default function LandingPage() {
             <div className="l-eyebrow">Rate Intelligence for Photo & Video Professionals</div>
             <h1 className="lhero-h1">Know Your<br />Worth.</h1>
             <p className="lhero-sub">
-              Real market rates, negotiation scripts, and budget guidance
-              for photographers, videographers, and the brands that hire them.
+              Want to skip the awkward money talk?<br />
+              Want to know what your work is really worth?
             </p>
             <div className="lhero-actions">
-              <Link href="/app" className="l-btn-primary">Get My Rate →</Link>
+              <Link href="/app" className="l-btn-primary">Try The Agent →</Link>
             </div>
             <p className="lhero-footnote">Free to try · No account needed</p>
           </div>
