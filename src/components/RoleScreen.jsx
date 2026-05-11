@@ -10,7 +10,7 @@ export default function RoleScreen({ role, onSelect, onContinue }) {
           <div className="role-header-eyebrow">Photo & Video Rate Negotiator</div>
           <h1 className="role-header-title">Know Your<br />Worth.</h1>
           <p className="role-header-sub">
-            Real market rates, negotiation scripts, and budget guidance — powered by AI.
+            Real market rates, negotiation scripts, and budget guidance — for photo & video professionals.
           </p>
           <div className="role-hero-badges">
             <span className="role-badge">📷 Photographers</span>

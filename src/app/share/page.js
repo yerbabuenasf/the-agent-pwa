@@ -115,7 +115,7 @@ function ShareView() {
                 : 'Does this budget work for you?'}
             </div>
             <div className="approve-sub">
-              This rate was calculated using AI-powered market data. Tap below to approve.
+              This rate was calculated based on current market data. Tap below to approve.
             </div>
             <button className={`btn ${color}`} onClick={handleApprove}>
               ✓ Approve This {isContractor ? 'Rate' : 'Budget'}
@@ -170,7 +170,7 @@ function ShareView() {
 
         {/* CTA */}
         <div className="share-footer">
-          <p className="share-footer-text">Rate calculated with The Agent — AI-powered rate negotiation for photo & video professionals.</p>
+          <p className="share-footer-text">Rate calculated with The Agent — rate negotiation for photo & video professionals.</p>
           <a href="/app" className="share-cta-link">Get your own rate →</a>
         </div>
 

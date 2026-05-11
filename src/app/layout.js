@@ -10,7 +10,7 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata = {
   title: 'The Agent',
-  description: 'AI rate negotiation for photographers and videographers',
+  description: 'Rate negotiation for photographers and videographers',
   manifest: '/manifest.json',
   themeColor: '#FFFFFF',
   appleWebApp: {

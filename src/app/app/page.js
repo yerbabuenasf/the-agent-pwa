@@ -157,7 +157,7 @@ export default function App() {
             <div className="spinner" />
             <div className="loading-title">Analyzing the market...</div>
             <div className="loading-sub">
-              Claude is calculating rates based on your project details, usage rights, and market conditions.
+              Calculating your rate based on project details, usage rights, and market conditions.
             </div>
           </div>
         );

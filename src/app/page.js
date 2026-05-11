@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'The Agent — AI Rate Intelligence for Photo & Video Creatives',
+  title: 'The Agent — Rate Intelligence for Photo & Video Creatives',
   description: 'Real market rates, negotiation scripts, and budget guidance for photographers, videographers, and the brands that hire them.',
 };
 
@@ -21,7 +21,7 @@ export default function LandingPage() {
       <section className="lhero">
         <div className="lhero-inner">
           <div className="lhero-text">
-            <div className="l-eyebrow">AI Rate Intelligence for Creatives</div>
+            <div className="l-eyebrow">Rate Intelligence for Photo & Video Professionals</div>
             <h1 className="lhero-h1">Know Your<br />Worth.</h1>
             <p className="lhero-sub">
               Real market rates, negotiation scripts, and budget guidance
@@ -30,7 +30,7 @@ export default function LandingPage() {
             <div className="lhero-actions">
               <Link href="/app" className="l-btn-primary">Get My Rate →</Link>
             </div>
-            <p className="lhero-footnote">Free to try · No account needed · Powered by AI</p>
+            <p className="lhero-footnote">Free to try · No account needed</p>
           </div>
 
           {/* App mockup */}
@@ -101,8 +101,8 @@ export default function LandingPage() {
           </div>
           <div className="lstat-div" />
           <div className="lstat">
-            <div className="lstat-num">AI</div>
-            <div className="lstat-label">Powered by Claude</div>
+            <div className="lstat-num">instant</div>
+            <div className="lstat-label">Rate calculation</div>
           </div>
           <div className="lstat-div" />
           <div className="lstat">
@@ -213,7 +213,7 @@ export default function LandingPage() {
             <div className="lhow-step">
               <div className="lstep-num">3</div>
               <div className="lstep-title">Get your number</div>
-              <p className="lstep-desc">AI analyzes the market and returns a rate range, breakdown, and negotiation script instantly</p>
+              <p className="lstep-desc">The Agent analyzes the market and returns a rate range, breakdown, and negotiation script instantly</p>
             </div>
           </div>
           <div className="lhow-cta">
@@ -236,8 +236,8 @@ export default function LandingPage() {
       <footer className="lfooter">
         <div className="lfooter-inner">
           <div className="lnav-logo">the <span>agent</span></div>
-          <p className="lfooter-sub">AI-powered rate intelligence for photo & video creatives.</p>
-          <p className="lfooter-copy">© 2025 The Agent · Powered by Claude</p>
+          <p className="lfooter-sub">Rate intelligence for photo & video creatives.</p>
+          <p className="lfooter-copy">© 2025 The Agent</p>
         </div>
       </footer>
 
