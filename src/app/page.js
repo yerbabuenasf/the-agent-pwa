@@ -1,263 +1,245 @@
-'use client';
+import Link from 'next/link';
 
-import { useState, useEffect } from 'react';
-import RoleScreen     from '@/components/RoleScreen';
-import ContractorForm from '@/components/ContractorForm';
-import EmployerForm   from '@/components/EmployerForm';
-import ResultScreen   from '@/components/ResultScreen';
-import HistoryScreen  from '@/components/HistoryScreen';
-import ProfileScreen  from '@/components/ProfileScreen';
+export const metadata = {
+  title: 'The Agent — AI Rate Intelligence for Photo & Video Creatives',
+  description: 'Real market rates, negotiation scripts, and budget guidance for photographers, videographers, and the brands that hire them.',
+};
 
-function usePWA() {
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
-  }, []);
-}
-
-const HISTORY_KEY = 'agent_history';
-const PROFILE_KEY = 'agent_profile';
-
-function loadHistory() {
-  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; }
-}
-function loadProfile() {
-  try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}'); } catch { return {}; }
-}
-
-export default function App() {
-  usePWA();
-
-  // ── All state at the top ───────────────────────────────────
-  const [screen,    setScreen]   = useState('role');
-  const [role,      setRole]     = useState('');
-  const [result,    setResult]   = useState(null);
-  const [formData,  setFormData] = useState(null);
-  const [error,     setError]    = useState('');
-  const [anim,      setAnim]     = useState('');
-  const [history,   setHistory]  = useState([]);
-  const [profile,   setProfile]  = useState({});
-  const [navTab,    setNavTab]   = useState('rates'); // 'rates' | 'history' | 'profile'
-
-  // ── Load persisted data on mount ──────────────────────────
-  useEffect(() => {
-    setHistory(loadHistory());
-    const p = loadProfile();
-    setProfile(p);
-    if (p.defaultRole) setRole(p.defaultRole);
-  }, []);
-
-  const isContractor = role === 'contractor';
-  const navColor     = isContractor ? 'blue' : 'purple';
-
-  // ── Navigation helpers ─────────────────────────────────────
-  function goForward(next) { setAnim('slide-in');   setScreen(next); }
-  function goBackward(next) { setAnim('slide-back'); setScreen(next); }
-
-  function goBack() {
-    if (screen === 'result' || screen === 'error') goBackward('form');
-    else if (screen === 'form') goBackward('role');
-  }
-
-  function goRole() {
-    setAnim('slide-back');
-    setScreen('role');
-    setResult(null);
-    setNavTab('rates');
-  }
-
-  function goTab(tab) {
-    setNavTab(tab);
-    setAnim('slide-in');
-    if (tab === 'rates')   { setScreen('role'); setResult(null); }
-    if (tab === 'history') setScreen('history');
-    if (tab === 'profile') setScreen('profile');
-  }
-
-  // ── History helpers ────────────────────────────────────────
-  function saveToHistory(formData, res) {
-    const item = {
-      id:          Date.now(),
-      date:        new Date().toISOString(),
-      role,
-      mediaType:   formData.mediaType,
-      projectType: formData.projectType || formData.useCase || 'Project',
-      recommended: res.recommended,
-      floor:       res.floor,
-      ceiling:     res.ceiling,
-      result:      res,
-    };
-    const next = [item, ...history].slice(0, 50); // keep last 50
-    setHistory(next);
-    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch {}
-  }
-
-  function deleteHistory(id) {
-    const next = history.filter((h) => h.id !== id);
-    setHistory(next);
-    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch {}
-  }
-
-  function viewHistoryItem(item) {
-    setRole(item.role);
-    setResult(item.result);
-    setNavTab('rates');
-    goForward('result');
-  }
-
-  // ── Profile save ───────────────────────────────────────────
-  function saveProfile(data) {
-    setProfile(data);
-    if (data.defaultRole) setRole(data.defaultRole);
-    try { localStorage.setItem(PROFILE_KEY, JSON.stringify(data)); } catch {}
-  }
-
-  // ── API call ───────────────────────────────────────────────
-  async function handleFormSubmit(formData) {
-    goForward('loading');
-    setError('');
-    try {
-      const res = await fetch('/api/rate', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ role, ...formData }),
-      });
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setResult(data);
-      setFormData(formData);
-      saveToHistory(formData, data);
-      goForward('result');
-    } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.');
-      goForward('error');
-    }
-  }
-
-  // ── Render current screen ──────────────────────────────────
-  function renderScreen() {
-    switch (screen) {
-      case 'role':
-        return (
-          <RoleScreen
-            role={role}
-            onSelect={setRole}
-            onContinue={() => role && goForward('form')}
-          />
-        );
-      case 'form':
-        return isContractor
-          ? <ContractorForm onSubmit={handleFormSubmit} defaultLocation={profile.location} />
-          : <EmployerForm   onSubmit={handleFormSubmit} defaultLocation={profile.location} />;
-      case 'loading':
-        return (
-          <div className="loading-wrap">
-            <div className="spinner" />
-            <div className="loading-title">Analyzing the market...</div>
-            <div className="loading-sub">
-              Claude is calculating rates based on your project details, usage rights, and market conditions.
-            </div>
-          </div>
-        );
-      case 'result':
-        return (
-          <ResultScreen
-            role={role}
-            result={result}
-            formData={formData}
-            onBack={goBack}
-          />
-        );
-      case 'error':
-        return (
-          <div>
-            <div className="error-banner">⚠️ {error}</div>
-            <div className="cta-wrap">
-              <button className="btn blue" onClick={goBack}>← Try Again</button>
-            </div>
-          </div>
-        );
-      case 'history':
-        return (
-          <HistoryScreen
-            history={history}
-            onView={viewHistoryItem}
-            onDelete={deleteHistory}
-          />
-        );
-      case 'profile':
-        return (
-          <ProfileScreen
-            profile={profile}
-            onSave={saveProfile}
-          />
-        );
-      default:
-        return null;
-    }
-  }
-
-  const showBack    = screen === 'form' || screen === 'result' || screen === 'error';
-  const showLoading = screen === 'loading';
-  const profileInitial = profile.name ? profile.name.trim()[0].toUpperCase() : 'J';
-
+export default function LandingPage() {
   return (
-    <div className="app-shell">
+    <div className="landing">
 
-      <nav className="top-nav">
-        <div className="top-nav-left">
-          {showBack ? (
-            <button className={`back-btn ${navColor}`} onClick={goBack}>‹ Back</button>
-          ) : null}
-          <div className="logo" onClick={goRole} style={{ cursor: 'pointer' }}>
-            the <span>agent</span>
-          </div>
-        </div>
-
-        {/* Desktop-only inline tabs */}
-        <div className="desktop-nav-tabs">
-          <button className={`desktop-tab ${navTab === 'rates' ? 'desktop-tab-active' : ''}`} onClick={() => goTab('rates')}>
-            💰 Rates
-          </button>
-          <button className={`desktop-tab ${navTab === 'history' ? 'desktop-tab-active' : ''}`} onClick={() => goTab('history')}>
-            📋 History
-          </button>
-          <button className={`desktop-tab ${navTab === 'profile' ? 'desktop-tab-active' : ''}`} onClick={() => goTab('profile')}>
-            👤 Profile
-          </button>
-        </div>
-
-        <div className="avatar" onClick={() => goTab('profile')} style={{ cursor: 'pointer' }}>
-          {profile.avatar
-            ? <img src={profile.avatar} alt="avatar" className="avatar-photo" />
-            : profileInitial}
+      {/* ── Nav ────────────────────────────────────────── */}
+      <nav className="lnav">
+        <div className="lnav-inner">
+          <div className="lnav-logo">the <span>agent</span></div>
+          <Link href="/app" className="lnav-cta">Try it Free →</Link>
         </div>
       </nav>
 
-      <div key={screen} className={`screen-content ${anim}`}>
-        {renderScreen()}
-      </div>
+      {/* ── Hero ───────────────────────────────────────── */}
+      <section className="lhero">
+        <div className="lhero-inner">
+          <div className="lhero-text">
+            <div className="l-eyebrow">AI Rate Intelligence for Creatives</div>
+            <h1 className="lhero-h1">Know Your<br />Worth.</h1>
+            <p className="lhero-sub">
+              Real market rates, negotiation scripts, and budget guidance
+              for photographers, videographers, and the brands that hire them.
+            </p>
+            <div className="lhero-actions">
+              <Link href="/app" className="l-btn-primary">Get My Rate →</Link>
+            </div>
+            <p className="lhero-footnote">Free to try · No account needed · Powered by AI</p>
+          </div>
 
-      {!showLoading && (
-        <div className="bottom-dock">
-          <nav className="dock-pill">
-            <button className={`dock-btn ${navTab === 'rates' ? 'dock-btn-active' : ''}`} onClick={() => goTab('rates')}>
-              <span className="dock-icon">💰</span>
-              <span className="dock-label">Rates</span>
-            </button>
-            <button className={`dock-btn ${navTab === 'history' ? 'dock-btn-active' : ''}`} onClick={() => goTab('history')}>
-              <span className="dock-icon">📋</span>
-              <span className="dock-label">History</span>
-            </button>
-            <button className={`dock-btn ${navTab === 'profile' ? 'dock-btn-active' : ''}`} onClick={() => goTab('profile')}>
-              <span className="dock-icon">👤</span>
-              <span className="dock-label">Profile</span>
-            </button>
-          </nav>
+          {/* App mockup */}
+          <div className="lhero-mockup-wrap">
+            <div className="lhero-mockup">
+              <div className="mockup-topbar">
+                <div className="mockup-dots">
+                  <span /><span /><span />
+                </div>
+                <span className="mockup-app-title">the <b>agent</b></span>
+                <div className="mockup-avatar" />
+              </div>
+              <div className="mockup-rate-hero">
+                <div className="mockup-rate-label">Recommended Rate</div>
+                <div className="mockup-rate-val">$2,400</div>
+                <div className="mockup-rate-range">Range: $1,600 – $3,200</div>
+              </div>
+              <div className="mockup-body">
+                <div className="mockup-section-label">Rate Breakdown</div>
+                <div className="mockup-bar-row">
+                  <span className="mbr-lbl">Floor</span>
+                  <div className="mbr-track"><div className="mbr-fill" style={{ width: '44%', background: '#94A3B8' }} /></div>
+                  <span className="mbr-amt">$1,600</span>
+                </div>
+                <div className="mockup-bar-row">
+                  <span className="mbr-lbl">Target</span>
+                  <div className="mbr-track"><div className="mbr-fill" style={{ width: '72%', background: '#2563EB' }} /></div>
+                  <span className="mbr-amt">$2,400</span>
+                </div>
+                <div className="mockup-bar-row">
+                  <span className="mbr-lbl">Ceiling</span>
+                  <div className="mbr-track"><div className="mbr-fill" style={{ width: '100%', background: '#1E40AF' }} /></div>
+                  <span className="mbr-amt">$3,200</span>
+                </div>
+                <div className="mockup-factors">
+                  <div className="mockup-factor">
+                    <span className="mf-icon">🏢</span>
+                    <span className="mf-text">Large brand client</span>
+                    <span className="mf-badge up">+$</span>
+                  </div>
+                  <div className="mockup-factor">
+                    <span className="mf-icon">🎬</span>
+                    <span className="mf-text">Video editing included</span>
+                    <span className="mf-badge up">+$</span>
+                  </div>
+                  <div className="mockup-factor">
+                    <span className="mf-icon">📄</span>
+                    <span className="mf-text">2-year usage rights</span>
+                    <span className="mf-badge up">+$</span>
+                  </div>
+                </div>
+                <div className="mockup-script-card">
+                  <div className="mockup-script-title">💬 If they say it's too high...</div>
+                  <div className="mockup-script-text">"I totally understand budget constraints. This rate reflects the usage rights and post-production..."</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      </section>
+
+      {/* ── Stats bar ──────────────────────────────────── */}
+      <section className="lstats">
+        <div className="lstats-inner">
+          <div className="lstat">
+            <div className="lstat-num">~2 min</div>
+            <div className="lstat-label">To your rate</div>
+          </div>
+          <div className="lstat-div" />
+          <div className="lstat">
+            <div className="lstat-num">AI</div>
+            <div className="lstat-label">Powered by Claude</div>
+          </div>
+          <div className="lstat-div" />
+          <div className="lstat">
+            <div className="lstat-num">$0</div>
+            <div className="lstat-label">Free to try</div>
+          </div>
+          <div className="lstat-div" />
+          <div className="lstat">
+            <div className="lstat-num">2</div>
+            <div className="lstat-label">Roles: shoot or hire</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Who it's for ───────────────────────────────── */}
+      <section className="lroles">
+        <div className="lsection-inner">
+          <div className="l-eyebrow center">Built for both sides of the deal</div>
+          <h2 className="lh2 center">Are you the shooter<br />or the buyer?</h2>
+          <div className="lroles-grid">
+
+            <div className="lrole-card lrole-blue">
+              <div className="lrole-icon">📸</div>
+              <div className="lrole-title">Photographers &<br />Videographers</div>
+              <ul className="lrole-list">
+                <li>Know your market rate before the client calls</li>
+                <li>Get word-for-word scripts when they push back</li>
+                <li>Understand what drives your rate up or down</li>
+                <li>Never leave money on the table again</li>
+              </ul>
+              <Link href="/app" className="l-btn-role l-btn-blue">Get My Rate →</Link>
+            </div>
+
+            <div className="lrole-card lrole-purple">
+              <div className="lrole-icon">🏢</div>
+              <div className="lrole-title">Brands &<br />Agencies</div>
+              <ul className="lrole-list">
+                <li>Know the fair market rate before you reach out</li>
+                <li>Make offers that serious talent actually accept</li>
+                <li>Get budget-saving tips without losing quality</li>
+                <li>Stop lowballing and losing great creatives</li>
+              </ul>
+              <Link href="/app" className="l-btn-role l-btn-purple">Get My Budget →</Link>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ── Features ───────────────────────────────────── */}
+      <section className="lfeatures">
+        <div className="lsection-inner">
+          <div className="l-eyebrow center">What you get</div>
+          <h2 className="lh2 center">Everything you need to<br />price your work right</h2>
+          <div className="lfeatures-grid">
+            <div className="lfeat">
+              <div className="lfeat-icon">💰</div>
+              <div className="lfeat-title">Market-accurate rates</div>
+              <p className="lfeat-desc">Floor, ceiling, and recommended rate tailored to your media type, deliverables, client, usage rights, and location.</p>
+            </div>
+            <div className="lfeat">
+              <div className="lfeat-icon">💬</div>
+              <div className="lfeat-title">Negotiation scripts</div>
+              <p className="lfeat-desc">Word-for-word language to use when a client pushes back — confident, professional, written for your exact situation.</p>
+            </div>
+            <div className="lfeat">
+              <div className="lfeat-icon">📊</div>
+              <div className="lfeat-title">Rate breakdown</div>
+              <p className="lfeat-desc">See exactly what's driving your number — usage rights, turnaround, client type, equipment — so you can defend every dollar.</p>
+            </div>
+            <div className="lfeat">
+              <div className="lfeat-icon">📋</div>
+              <div className="lfeat-title">Proposal builder</div>
+              <p className="lfeat-desc">Turn your rate into a polished proposal with deliverables, terms, and an approve button — ready to send in seconds.</p>
+            </div>
+            <div className="lfeat">
+              <div className="lfeat-icon">📱</div>
+              <div className="lfeat-title">Works anywhere</div>
+              <p className="lfeat-desc">Mobile-first app you can add to your home screen. Pull up your rate on set, in a coffee shop, or right before a call.</p>
+            </div>
+            <div className="lfeat">
+              <div className="lfeat-icon">🗂️</div>
+              <div className="lfeat-title">Rate history</div>
+              <p className="lfeat-desc">Every calculation is saved locally. Look back at past projects, track your rates over time, and spot patterns in your pricing.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── How it works ───────────────────────────────── */}
+      <section className="lhow">
+        <div className="lsection-inner">
+          <div className="l-eyebrow center">Simple by design</div>
+          <h2 className="lh2 center">Your rate in under 2 minutes</h2>
+          <div className="lhow-steps">
+            <div className="lhow-step">
+              <div className="lstep-num">1</div>
+              <div className="lstep-title">Pick your role</div>
+              <p className="lstep-desc">Contractor (photographer or videographer) or employer (brand or agency)</p>
+            </div>
+            <div className="lhow-arrow">→</div>
+            <div className="lhow-step">
+              <div className="lstep-num">2</div>
+              <div className="lstep-title">Describe the project</div>
+              <p className="lstep-desc">Media type, deliverables, usage rights, timeline, and client type — takes about 90 seconds</p>
+            </div>
+            <div className="lhow-arrow">→</div>
+            <div className="lhow-step">
+              <div className="lstep-num">3</div>
+              <div className="lstep-title">Get your number</div>
+              <p className="lstep-desc">AI analyzes the market and returns a rate range, breakdown, and negotiation script instantly</p>
+            </div>
+          </div>
+          <div className="lhow-cta">
+            <Link href="/app" className="l-btn-primary">Try it now — it's free →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Final CTA ──────────────────────────────────── */}
+      <section className="lfinal">
+        <div className="lsection-inner center">
+          <h2 className="lh2 lh2-white">Ready to know your worth?</h2>
+          <p className="lfinal-sub">Join photographers, videographers, and brands using The Agent to negotiate smarter.</p>
+          <Link href="/app" className="l-btn-primary l-btn-lg">Get Started Free →</Link>
+          <p className="lfinal-note">No account needed · Works on mobile & desktop</p>
+        </div>
+      </section>
+
+      {/* ── Footer ─────────────────────────────────────── */}
+      <footer className="lfooter">
+        <div className="lfooter-inner">
+          <div className="lnav-logo">the <span>agent</span></div>
+          <p className="lfooter-sub">AI-powered rate intelligence for photo & video creatives.</p>
+          <p className="lfooter-copy">© 2025 The Agent · Powered by Claude</p>
+        </div>
+      </footer>
 
     </div>
   );

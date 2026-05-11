@@ -51,7 +51,7 @@ function ShareView() {
           <div style={{ fontSize: 48, marginBottom: 16 }}>🔗</div>
           <h2>Link not found</h2>
           <p>This link may have expired or been modified.</p>
-          <a href="/" className="share-cta-link">Try The Agent →</a>
+          <a href="/app" className="share-cta-link">Try The Agent →</a>
         </div>
       </div>
     );
@@ -171,7 +171,7 @@ function ShareView() {
         {/* CTA */}
         <div className="share-footer">
           <p className="share-footer-text">Rate calculated with The Agent — AI-powered rate negotiation for photo & video professionals.</p>
-          <a href="/" className="share-cta-link">Get your own rate →</a>
+          <a href="/app" className="share-cta-link">Get your own rate →</a>
         </div>
 
       </div>
