@@ -92,30 +92,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Stats bar ──────────────────────────────────── */}
-      <section className="lstats">
-        <div className="lstats-inner">
-          <div className="lstat">
-            <div className="lstat-num">~2 min</div>
-            <div className="lstat-label">To your rate</div>
-          </div>
-          <div className="lstat-div" />
-          <div className="lstat">
-            <div className="lstat-num">instant</div>
-            <div className="lstat-label">Rate calculation</div>
-          </div>
-          <div className="lstat-div" />
-          <div className="lstat">
-            <div className="lstat-num">$0</div>
-            <div className="lstat-label">Free to try</div>
-          </div>
-          <div className="lstat-div" />
-          <div className="lstat">
-            <div className="lstat-num">2</div>
-            <div className="lstat-label">Roles: shoot or hire</div>
-          </div>
-        </div>
-      </section>
 
       {/* ── Who it's for ───────────────────────────────── */}
       <section className="lroles">
